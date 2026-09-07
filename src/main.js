@@ -22,6 +22,7 @@ function modalMarkup() {
     '<div class="cert-thumbs">'+slides.map((src,i)=>'<button type="button" data-slide="'+i+'" aria-label="'+t('goSlide',{count:number(i+1)})+'"><img src="/company/'+src+'" alt=""></button>').join('')+'</div></div>';
 }
 function render() {
+  document.body.classList.remove('nav-open');
   if(state.language!==getLanguage()){state.status='';state.language=getLanguage();}
   metadata(t('titleHome'));
   document.querySelector('#app').innerHTML = `
@@ -77,9 +78,10 @@ function render() {
 ${modalMarkup()}`;
   const menu = document.querySelector('.menu');
   initProductMenu();
-  const closeMenu = () => {document.querySelector('#nav').classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};
+  const closeMenu = () => {document.querySelector('#nav').classList.remove('open');document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};
   menu.onclick = () => {
     const open=document.querySelector('#nav').classList.toggle('open');
+    document.body.classList.toggle('nav-open',open);
     menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',t(open?'menuClose':'menuOpen'));menu.textContent=open?'×':'☰';
   };
   document.querySelectorAll('#nav a').forEach(link=>link.onclick=closeMenu);

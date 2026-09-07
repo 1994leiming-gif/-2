@@ -47,6 +47,7 @@ function quoteForm(page) {
 }
 
 function render() {
+  document.body.classList.remove('nav-open');
   const entity=entityFromLocation();
   const page=getContentPage(entity.type==='content'?entity.slug:'company',getLanguage());
   if(!page){ location.assign(route('/')); return; }
@@ -55,7 +56,10 @@ function render() {
   document.querySelector('#content-app').innerHTML=`${navMarkup()}<main><section class="content-hero"><div><span class="kicker">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.description}</p><a class="text-link" href="${route('/request-quote/')}">${t('quote')} <span class="direction-arrow">→</span></a></div><figure class="content-media media-${page.layout}"><img src="${page.image}" alt="${esc(page.imageAlt)}" fetchpriority="high"><figcaption>${l.source}</figcaption></figure></section><section class="content-points section-shell">${page.points.map((point,index)=>`<article><span>${String(number(index+1)).padStart(2,'0')}</span><p>${point}</p></article>`).join('')}</section>${page.layout==='company'?companyDetails():''}${page.layout==='products'?productGrid():''}${page.layout==='quote'?quoteForm(page):''}<aside class="content-source-note section-shell"><strong>${l.source}</strong><p>${l.notice}</p><a href="${supplierUrl}" target="_blank" rel="noopener">${t('store')} ↗</a></aside>${page.layout!=='quote'?`<section class="content-cta section-shell"><span>${l.brief}</span><h2>${t('contactTitle')}</h2><a class="button inverse" href="${route('/request-quote/')}">${t('quote')} ↗</a></section>`:''}</main>${footer()}`;
   initProductMenu();
   const menu=document.querySelector('.menu');
-  menu.onclick=()=>{const open=document.querySelector('#nav').classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',t(open?'menuClose':'menuOpen'));menu.textContent=open?'×':'☰';};
+  const closeMenu=()=>{document.querySelector('#nav').classList.remove('open');document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};
+  menu.onclick=()=>{const open=document.querySelector('#nav').classList.toggle('open');document.body.classList.toggle('nav-open',open);menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',t(open?'menuClose':'menuOpen'));menu.textContent=open?'×':'☰';};
+  document.querySelectorAll('#nav a').forEach(link=>link.onclick=closeMenu);
+  document.querySelector('#nav').onkeydown=event=>{if(event.key==='Escape'){closeMenu();menu.focus({preventScroll:true});}};
   const form=document.querySelector('#content-quote-form');
   if(form){
     const message=()=>[t('inquiryHello'),t('email')+': '+state.email,t('productLabel')+': '+t(state.type),t('quantity')+': '+(state.quantity||t('pending')),l.details+': '+(state.details||t('inquiryDefault'))].join('\n');
