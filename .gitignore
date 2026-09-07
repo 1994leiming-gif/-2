@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+Thumbs.db
+
+# Local research captures and screenshots are not release content.
+qa/*.html
+qa/*.png
+reference-design.mp4
+video-review.html
+
+# Local browser tests currently depend on an external workspace runtime.
+tests/
