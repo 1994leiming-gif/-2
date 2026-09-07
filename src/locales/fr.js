@@ -151,6 +151,8 @@ export default {
   backCatalog: "Retour aux collections",
   backCategory: "Retour à la catégorie",
   allProducts: "Tous les produits",
+  moreProducts: "Voir plus",
+  customize: "Personnaliser",
   categoryNav: "Catégories de produits",
   categoryTitle: "{name} | Catalogue produits",
   productPageTitle: "{name} | LU Packaging",

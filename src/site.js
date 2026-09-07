@@ -59,18 +59,34 @@ export function wordmark(href = '/') {
 }
 export function productMenu() {
   const menuCategories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack'];
-  const categoryLinks = menuCategories.map((category, index) => {
+  const categoryRows = menuCategories.map((category, index) => {
     const count = allProducts.filter(item => item.category === category).length;
-    return '<a class="product-menu-category" href="' + categoryLink(category) + '"><span><b>' + number(index + 1) + '.</b> ' + esc(t(category)) + '</span><small>' + number(count) + '</small></a>';
+    return '<div class="product-menu-category"><span class="product-menu-category-name"><b>' + number(index + 1) + '.</b> ' + esc(t(category)) + '</span>' +
+      '<small class="product-menu-count">' + number(count) + '</small>' +
+      '<a class="product-menu-more" href="' + categoryLink(category) + '">' + esc(t('moreProducts')) + ' <span class="direction-arrow">→</span></a>' +
+      '<a class="product-menu-customize" href="' + route('/request-quote/') + '?type=' + encodeURIComponent(category) + '">' + esc(t('customize')) + ' <span class="direction-arrow">→</span></a></div>';
   }).join('');
   return '<details class="product-nav-dropdown"><summary aria-label="' + esc(t('allProducts')) + '"><span>' + esc(t('allProducts')) + '</span><span class="product-menu-chevron" aria-hidden="true">⌄</span></summary>' +
-    '<div class="product-menu-panel"><div class="product-menu-categories">' + categoryLinks + '</div><div class="product-menu-actions">' +
-      '<a href="' + route('/capabilities/custom-packaging/') + '">' + esc(t('capabilities')) + ' <span class="direction-arrow">→</span></a>' +
-      '<a href="' + categoryLink('all') + '">' + esc(t('viewAll',{count:number(allProducts.length)})) + ' <span class="direction-arrow">→</span></a></div></div></details>';
+    '<div class="product-menu-panel"><div class="product-menu-categories">' + categoryRows + '</div></div></details>';
 }
 export function initProductMenu(root = document) {
   const dropdown = root.querySelector('.product-nav-dropdown');
   if (!dropdown) return;
+  const supportsHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  let closeTimer;
+  if (supportsHover) {
+    dropdown.querySelector('summary').addEventListener('click', event => {
+      event.preventDefault();
+      dropdown.open = true;
+    });
+    dropdown.addEventListener('mouseenter', () => {
+      clearTimeout(closeTimer);
+      dropdown.open = true;
+    });
+    dropdown.addEventListener('mouseleave', () => {
+      closeTimer = setTimeout(() => dropdown.removeAttribute('open'), 120);
+    });
+  }
   dropdown.addEventListener('toggle', () => {
     if (!dropdown.open) return;
     root.querySelectorAll('.language-dropdown[open]').forEach(menu => menu.removeAttribute('open'));

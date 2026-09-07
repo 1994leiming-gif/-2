@@ -151,6 +151,8 @@ export default {
   backCatalog: "Kembali ke koleksi",
   backCategory: "Kembali ke kategori",
   allProducts: "Semua produk",
+  moreProducts: "Produk lainnya",
+  customize: "Kustomisasi",
   categoryNav: "Kategori produk",
   categoryTitle: "{name} | Katalog produk",
   productPageTitle: "{name} | Luzhou Packaging",

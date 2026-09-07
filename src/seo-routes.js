@@ -51,8 +51,11 @@ export function entityPath(entity, language) {
 
 export function localizedCurrentPath(language, currentLocation = location) {
   const url = new URL(entityPath(entityFromLocation(currentLocation), language), currentLocation.origin);
-  const color = currentLocation.searchParams?.get('color') || new URLSearchParams(currentLocation.search).get('color');
-  if (color) url.searchParams.set('color', color);
+  const currentParams = currentLocation.searchParams || new URLSearchParams(currentLocation.search);
+  for (const parameter of ['color','type']) {
+    const value = currentParams.get(parameter);
+    if (value) url.searchParams.set(parameter, value);
+  }
   return url.pathname + url.search;
 }
 
