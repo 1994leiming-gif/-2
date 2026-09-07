@@ -12,6 +12,7 @@ const categories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack',
 const paperIds = ['1601899947431','1601929692010','1601929766011','1601925253800','1601927631424','1601925527548'];
 const buildDate = '2026-09-07';
 const supplierUrl = 'https://luzhouspecialty.m.en.alibaba.com/';
+const googleAnalyticsId = 'G-KJEG3N7QN4';
 
 const featureRules = [
   ['tagPlaPbat',/PLA\s*\+\s*PBAT/i],['tagBopp',/\bBOPP\b/i],['tagPe',/\bPE\b/i],
@@ -108,6 +109,14 @@ function pageHead({ language, entity, title, description, image, type = 'website
     <link rel="icon" href="/images/lu-packaging-stacked.png" type="image/png">
     <link rel="apple-touch-icon" href="/images/lu-packaging-stacked.png">
     <link rel="stylesheet" href="/src/style.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '${googleAnalyticsId}');
+    </script>
     <script type="application/ld+json">${jsonLd(schema)}</script>`;
 }
 

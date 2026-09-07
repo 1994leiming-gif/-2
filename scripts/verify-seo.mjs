@@ -7,6 +7,7 @@ import { categoryPath, contentPath, homePath, languageCodes, localeDetails, prod
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 const categories = ['all','paperbag','nonwoven','paperbox','mailerbox','flexiblepack','accessory','plasticbag'];
+const googleAnalyticsId = 'G-KJEG3N7QN4';
 const failures = [];
 let checked = 0;
 const expectedPerLanguage = 1 + categories.length + allProducts.length + contentPageSlugs.length;
@@ -31,6 +32,9 @@ function inspectHtml(html, language, path) {
   if (hreflangs.length !== 11) failures.push(path + ': hreflang count=' + hreflangs.length);
   if (!html.includes('<meta name="robots" content="index,follow,max-image-preview:large">')) failures.push(path + ': wrong robots');
   if (!html.includes('<meta property="og:title"') || !html.includes('<meta name="twitter:card"')) failures.push(path + ': social metadata missing');
+  const analyticsLoader = `https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`;
+  if ((html.match(new RegExp(analyticsLoader.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length !== 1) failures.push(path + ': GA4 loader missing or duplicated');
+  if (!html.includes(`gtag('config', '${googleAnalyticsId}')`)) failures.push(path + ': GA4 config missing');
   if (!html.includes('<h1>')) failures.push(path + ': initial h1 missing');
   if (/href="[^"]*(?:\?lang=|category\.html\?type=|product\.html\?id=)/.test(html)) failures.push(path + ': legacy internal link');
   try { JSON.parse(json); } catch { failures.push(path + ': invalid JSON-LD'); }
@@ -74,4 +78,4 @@ if (failures.length) {
   if (failures.length > 100) console.error('…and ' + (failures.length - 100) + ' more');
   process.exit(1);
 }
-console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
+console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, one GA4 tag per page, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
