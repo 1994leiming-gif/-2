@@ -1,4 +1,5 @@
 import { messages } from './locales/index.js';
+import { languageFromPath, localizedCurrentPath } from './seo-routes.js';
 
 export const languageOptions = [
   { code:'en', tag:'en', flag:'🇬🇧', label:'English', short:'EN' },
@@ -15,12 +16,9 @@ export const languageOptions = [
 export const languages = languageOptions.map(option => option.code);
 const options = Object.fromEntries(languageOptions.map(option => [option.code, option]));
 const tags = Object.fromEntries(languageOptions.map(option => [option.code, option.tag]));
-const requested = new URLSearchParams(location.search).get('lang');
-let current = languages.includes(requested) ? requested : 'zh';
-try {
-  const saved = localStorage.getItem('site-language');
-  if (!languages.includes(requested) && languages.includes(saved)) current = saved;
-} catch {}
+const queryLanguage = new URLSearchParams(location.search).get('lang');
+const pathLanguage = languageFromPath(location.pathname);
+let current = pathLanguage || (languages.includes(queryLanguage) ? queryLanguage : 'zh');
 export const getLanguage = () => current;
 export const number = value => new Intl.NumberFormat(tags[current]).format(value);
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
@@ -55,10 +53,8 @@ export function initLanguage(render) {
   document.addEventListener('click', event => {
     const button = event.target.closest('button[data-lang]');
     if (!button || !languages.includes(button.dataset.lang) || button.dataset.lang === current) return;
-    const y = window.scrollY;
-    apply(button.dataset.lang);
-    document.querySelector('.language-dropdown summary')?.focus({ preventScroll:true });
-    window.scrollTo({ top:y, behavior:'instant' });
+    try { localStorage.setItem('site-language', button.dataset.lang); } catch {}
+    location.assign(localizedCurrentPath(button.dataset.lang));
   });
   document.addEventListener('click', event => {
     document.querySelectorAll('.language-dropdown[open]').forEach(dropdown => {
@@ -70,9 +66,6 @@ export function initLanguage(render) {
       dropdown.removeAttribute('open');
       dropdown.querySelector('summary')?.focus({ preventScroll:true });
     });
-  });
-  window.addEventListener('storage', event => {
-    if (event.key === 'site-language' && languages.includes(event.newValue) && event.newValue !== current) apply(event.newValue);
   });
   apply(current);
 }

@@ -1,8 +1,9 @@
 import allProducts from './data/all-products.js';
 import { initLanguage,t,number,getLanguage,escapeHtml as esc } from './i18n.js';
-import { detailHeader,footer,metadata,productTitle,productSummary,imagePath,moq,price,route,productLink,parseColor,supplierUrl,copyMessage,formStatus,emailError,productUnit,checkedDate } from './site.js';
+import { detailHeader,footer,metadata,productTitle,productSummary,productSeoTitle,productSeoDescription,imagePath,moq,price,route,productLink,parseColor,supplierUrl,copyMessage,formStatus,emailError,productUnit,checkedDate } from './site.js';
 const params=new URLSearchParams(location.search);
-const item=allProducts.find(product=>product.id===params.get('id'));
+const pathId=location.pathname.match(/\/products\/([^/]+)\/?$/)?.[1];
+const item=allProducts.find(product=>product.id===(pathId?decodeURIComponent(pathId):params.get('id')));
 const color=parseColor(params.get('color'))||{h:145,s:42,l:50};
 const state={...color,email:'',quantity:'',requirements:'',status:'',error:'',language:'',sourceOpen:false};
 const related=item?allProducts.filter(product=>product.category===item.category&&product.id!==item.id).slice(0,4):[];
@@ -24,7 +25,7 @@ function render(){
     return;
   }
   const name=productTitle(item);
-  metadata(t('productPageTitle',{name}),productSummary(item));
+  metadata(productSeoTitle(item),productSeoDescription(item));
   document.querySelector('#product-app').innerHTML=`
   ${detailHeader('/category.html?type='+item.category,'backCategory')}
   <main>

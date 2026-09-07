@@ -1,14 +1,13 @@
 import allProducts from './data/all-products.js';
 import { t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
+import { categoryPath, productPath, normalizeLocalPath, entityFromLocation, canonicalUrl, languageCodes, localeDetails } from './seo-routes.js';
 
 export const supplierUrl = 'https://luzhouspecialty.m.en.alibaba.com/';
 export const categories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack','accessory','plasticbag'];
 export const paperIds = ['1601899947431','1601929692010','1601929766011','1601925253800','1601927631424','1601925527548'];
 export const imagePath = item => item.localImage || item.image;
 export function route(path) {
-  const url = new URL(path, location.origin);
-  url.searchParams.set('lang', getLanguage());
-  return url.pathname + url.search + url.hash;
+  return normalizeLocalPath(path, getLanguage());
 }
 export function productTitle(item) {
   const curated = paperIds.indexOf(item.id);
@@ -27,8 +26,19 @@ const featureRules = [
   ['tagCorrugated',/corrugated/i],['tagEmbossed',/emboss/i],['tagScreen',/screen print/i],['tagOffset',/offset/i],['tagGravure',/gravure|intaglio/i],
   ['tagRecycled',/recyclable/i],['tagReusable',/reusable/i],['tagCustom',/custom/i]
 ];
-export function productSummary(item) {
-  return featureRules.filter(([,pattern]) => pattern.test(item.subject)).map(([key]) => t(key)).join(' · ') || t(item.category);
+export function productSummary(item, limit = Infinity) {
+  return featureRules.filter(([,pattern]) => pattern.test(item.subject)).map(([key]) => t(key)).slice(0, limit).join(' · ') || t(item.category);
+}
+export function productSeoTitle(item) {
+  const fullName = productTitle(item);
+  const firstFeature = featureRules.find(([,pattern]) => pattern.test(item.subject));
+  const categoryName = t(item.category);
+  const candidates = [fullName, firstFeature ? categoryName + ' · ' + t(firstFeature[0]) : categoryName, categoryName];
+  const titles = candidates.map(name => t('productPageTitle',{name:name + ' · #' + item.id}));
+  return titles.find(title => title.length <= 75) || titles.at(-1);
+}
+export function productSeoDescription(item) {
+  return [productSummary(item, 3),t('moq')+': '+moq(item),t('productId')+': '+item.id].join('. ');
 }
 const unitKeys = {piece:'unitPiece',pieces:'unitPieces',roll:'unitRoll',rolls:'unitRolls',kilogram:'unitKilogram',kilograms:'unitKilogram','square meter':'unitSquareMeter','square meters':'unitSquareMeter',kilometer:'unitKilometer',kilometers:'unitKilometer'};
 export function moq(item) {
@@ -54,6 +64,28 @@ export const footer = () => '<footer class="detail-footer">' + t('rights') + '</
 export function metadata(title, description = t('metaHome')) {
   document.title = title;
   document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+  const entity = entityFromLocation();
+  const canonical = canonicalUrl(entity, getLanguage());
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.rel = 'canonical';
+    document.head.append(canonicalLink);
+  }
+  canonicalLink.href = canonical;
+  document.querySelectorAll('link[rel="alternate"][hreflang]').forEach(link => link.remove());
+  for (const language of languageCodes) {
+    const link = document.createElement('link');
+    link.rel = 'alternate';
+    link.hreflang = localeDetails[language].tag;
+    link.href = canonicalUrl(entity, language);
+    document.head.append(link);
+  }
+  const fallback = document.createElement('link');
+  fallback.rel = 'alternate';
+  fallback.hreflang = 'x-default';
+  fallback.href = canonicalUrl(entity, 'zh');
+  document.head.append(fallback);
 }
 export function formStatus(status, message) {
   if (!status) return t('formHint');
@@ -74,6 +106,8 @@ export function parseColor(value) {
   return h <= 360 && s <= 100 && l <= 100 ? {h,s,l} : null;
 }
 export function productLink(item, color) {
-  return route('/product.html?id=' + encodeURIComponent(item.id) + (color ? '&color=' + [color.h,color.s,color.l].join('-') : ''));
+  const path = productPath(item.id, getLanguage());
+  return path + (color ? '?color=' + [color.h,color.s,color.l].join('-') : '');
 }
+export const categoryLink = (category = 'all', color) => categoryPath(category, getLanguage()) + (color ? '?color=' + [color.h,color.s,color.l].join('-') : '');
 export const totalProducts = allProducts.length;

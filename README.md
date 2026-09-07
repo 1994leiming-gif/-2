@@ -1,10 +1,10 @@
 # Luzhou Packaging Website
 
-泸州包装网站，包含中文、英文、阿拉伯语界面，以及 278 款包装产品目录。
+泸州包装网站，包含中文、英文、法文、德文、西班牙文、意大利文、阿拉伯文、俄文、印地文、印度尼西亚文界面，以及 278 款包装产品目录。
 
 ## 本地运行
 
-使用 Node.js 18 或更高版本，在解压目录运行：
+使用 Node.js 18 或更高版本。查看源码模式：
 
 ```sh
 npm start
@@ -12,9 +12,24 @@ npm start
 
 浏览器访问 `http://127.0.0.1:4173/`。项目没有第三方运行依赖，不需要安装依赖或构建。
 
-- 中文：`/?lang=zh`
-- English：`/?lang=en`
-- العربية：`/?lang=ar`
+生成并查看完整 SEO 静态站点：
+
+```sh
+npm run build
+SITE_ROOT=dist npm start
+```
+
+- 中文：`/`
+- English：`/en/`
+- العربية：`/ar/`
+- 产品示例：`/en/products/1601925527548/`
+- 分类示例：`/fr/categories/paperbag/`
+
+运行全量 SEO 结构校验：
+
+```sh
+npm run verify:seo
+```
 
 `PORT` 可修改端口；`HOST` 默认 `127.0.0.1`，仅供本机访问。
 
@@ -22,7 +37,10 @@ npm start
 
 - `index.html`：首页。
 - `category.html`、`product.html`：分类与产品详情。
-- `src/`：页面脚本、样式、三语词典和产品数据。
+- `src/`：页面脚本、样式、十语词典和产品数据。
+- `scripts/build-seo.mjs`：生成 2,870 个本地化 canonical 页面、sitemap 和 robots.txt。
+- `scripts/verify-seo.mjs`：校验页面数量、标题、canonical、hreflang、JSON-LD 和 sitemap。
+- `docs/SEO-PLAN.md`：多语言 SEO 架构、实施阶段与验收标准。
 - `catalog/`、`company/`、`images/`、`fonts/`、`products/`：本地资源。
 - `qa/产品数据核对报告.md`：数据来源、核对结果和待确认项。
 - `qa/supplier-audit.json`：供应商公开目录核对快照。
@@ -52,6 +70,6 @@ ZIP 输出至 `dist/`，包含可运行网站、资源和已整理的核对报�
 
 ## 部署说明
 
-可以通过 `node server.mjs` 或静态文件服务器在域名根目录部署。页面使用以 `/` 开头的资源和路由地址，因此不能未经修改直接部署到 GitHub Pages 的 `/仓库名/` 子路径。上传仓库本身不等同于开通公网网站。
+Vercel 会运行 `npm run build` 并发布 `dist/`。其他静态服务器也应先执行构建，再把 `dist/` 作为域名根目录。页面使用以 `/` 开头的资源和路由地址，因此不能未经修改直接部署到 GitHub Pages 的 `/仓库名/` 子路径。上传仓库本身不等同于开通公网网站。
 
 图片、字体、商标及供应商资料保留其原有权利；本项目没有为第三方素材另行授予开源许可。公开发布前请确认相关使用权限。

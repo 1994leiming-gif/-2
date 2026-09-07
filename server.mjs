@@ -4,7 +4,8 @@ import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = resolve(fileURLToPath(new URL('.', import.meta.url)));
+const projectRoot = resolve(fileURLToPath(new URL('.', import.meta.url)));
+const root = process.env.SITE_ROOT ? resolve(projectRoot, process.env.SITE_ROOT) : projectRoot;
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 4173);
 
@@ -34,15 +35,17 @@ const server = createServer(async (request, response) => {
       return;
     }
 
-    const info = await stat(filePath);
+    let info = await stat(filePath);
+    const servedPath = info.isDirectory() ? resolve(filePath, 'index.html') : filePath;
+    if (info.isDirectory()) info = await stat(servedPath);
     if (!info.isFile()) throw new Error('Not a file');
 
     response.writeHead(200, {
       'Cache-Control': 'no-cache',
       'Content-Length': info.size,
-      'Content-Type': contentTypes[extname(filePath).toLowerCase()] || 'application/octet-stream',
+      'Content-Type': contentTypes[extname(servedPath).toLowerCase()] || 'application/octet-stream',
     });
-    createReadStream(filePath).pipe(response);
+    createReadStream(servedPath).pipe(response);
   } catch {
     response.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
     response.end('Not Found');

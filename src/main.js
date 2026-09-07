@@ -1,6 +1,6 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
-import { categories, paperIds, productTitle, imagePath, productLink, route, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError } from './site.js';
+import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError } from './site.js';
 
 const state = { email:'', type:'paperbag', color:'', status:'', error:'', language:'', slide:null };
 const slides = ['company-12.jpg','company-38.jpg','company-39.jpg','company-32.jpg','company-37.jpg'];
@@ -40,10 +40,10 @@ function render() {
   </section>
   <section class="ticker"><div>${[1,2,3,4,5,1,2].map(i=>t('ticker'+i)+' <b aria-hidden="true">✦</b> ').join('')}</div></section>
   <section id="papers" class="catalog section-pad">
-    <div class="catalog-head section-shell"><div><span class="kicker">${number(1)} / ${t('catalog')}</span><h2>${t('catalog')}</h2></div><a class="catalog-all" href="${route('/category.html')}">${t('viewAll',{count:number(allProducts.length)})} <span class="direction-arrow">→</span></a></div>
+    <div class="catalog-head section-shell"><div><span class="kicker">${number(1)} / ${t('catalog')}</span><h2>${t('catalog')}</h2></div><a class="catalog-all" href="${categoryLink('all')}">${t('viewAll',{count:number(allProducts.length)})} <span class="direction-arrow">→</span></a></div>
     <div class="catalog-showcase">${shownCategories.map((category,index)=>{
       const items = category==='paperbag' ? paperIds.map(id=>allProducts.find(item=>item.id===id)) : allProducts.filter(item=>item.category===category).slice(0,6);
-      return `<section class="catalog-block section-shell" data-category-key="${category}"><aside><small>${number(index+1)} / ${t(category)}</small><h3>${t(category)}</h3><p>${t(category+'Desc')}</p><a href="${route('/category.html?type='+category)}">${t('viewAll',{count:number(allProducts.filter(item=>item.category===category).length)})} <span class="direction-arrow">→</span></a></aside>
+      return `<section class="catalog-block section-shell" data-category-key="${category}"><aside><small>${number(index+1)} / ${t(category)}</small><h3>${t(category)}</h3><p>${t(category+'Desc')}</p><a href="${categoryLink(category)}">${t('viewAll',{count:number(allProducts.filter(item=>item.category===category).length)})} <span class="direction-arrow">→</span></a></aside>
         <div class="catalog-product-wall">${items.map(item=>`<a href="${productLink(item)}" class="catalog-tile"><img src="${imagePath(item)}" alt="${esc(productTitle(item))}" loading="lazy"><span>${esc(productTitle(item))}</span><b>${t('tileNote')} ↗</b></a>`).join('')}</div></section>`;
     }).join('')}</div>
   </section>

@@ -3,6 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-seo.mjs",
+    "verify:seo": "node scripts/verify-seo.mjs",
     "start": "node server.mjs"
   }
 }
