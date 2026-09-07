@@ -1,6 +1,7 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
 import { getContentPage } from './content-pages.js';
+import { companyFacts, companyMarkets, companyGallery, certificateRecords, extraCopy } from './content-extras.js';
 import { entityFromLocation } from './seo-routes.js';
 import { paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route, footer } from './site.js';
 
@@ -37,7 +38,19 @@ function productGrid() {
 
 function companyDetails() {
   const l=currentUi();
-  return `<section class="content-evidence"><article><span>01</span><h2>${l.verified}</h2><p>${l.registry}</p></article><article><span>02</span><h2>${l.markets}</h2><p>${l.marketsText}</p></article></section>`;
+  const x=extraCopy(getLanguage());
+  const facts=companyFacts.map((fact,index)=>`<article><span>${esc(x.factLabels[index])}</span><strong dir="ltr">${fact.value}</strong></article>`).join('');
+  const strengths=x.strengths.map((item,index)=>`<li><span>${number(index+1)}</span><b>${esc(item)}</b></li>`).join('');
+  const markets=companyMarkets.map((share,index)=>`<li><div><span>${esc(x.marketLabels[index])}</span><b>${number(share)}%</b></div><i style="--share:${share}%"></i></li>`).join('');
+  const gallery=companyGallery.map((image,index)=>`<figure><img src="${image}" alt="${esc(x.galleryCaptions[index])}" loading="lazy"><figcaption><span>${String(number(index+1)).padStart(2,'0')}</span>${esc(x.galleryCaptions[index])}</figcaption></figure>`).join('');
+  return `<section class="company-profile-expanded"><div class="section-shell company-profile-head"><span class="kicker">${esc(x.snapshot)}</span><h2>${esc(t('companyName'))}</h2><p>${esc(x.snapshotNote)}</p><div class="company-profile-facts">${facts}</div></div><div class="company-profile-story"><article><span>01</span><h3>${esc(l.verified)}</h3><p>${esc(l.registry)}</p><a href="https://luzhouspecialty.en.alibaba.com/company_profile/trustpass_profile.html?certification_type=intl_assessment" target="_blank" rel="noopener">${esc(x.snapshot)} ↗</a></article><article><span>02</span><h3>${esc(x.whyTitle)}</h3><p>${esc(x.whyNote)}</p><ol>${strengths}</ol></article></div><div class="section-shell company-markets"><div><span class="kicker">${esc(l.markets)}</span><h3>${esc(x.marketsTitle)}</h3><p>${esc(x.marketsNote)} ${esc(l.marketsText)}</p></div><ul>${markets}</ul></div><div class="section-shell company-source-gallery"><header><span class="kicker">${esc(l.source)}</span><h3>${esc(x.galleryTitle)}</h3><p>${esc(x.galleryNote)}</p></header><div>${gallery}</div></div></section>`;
+}
+
+function qualityDetails() {
+  const l=currentUi();
+  const x=extraCopy(getLanguage());
+  const cards=certificateRecords.map((record,index)=>`<article class="certificate-document"><a href="${record.image}" target="_blank" rel="noopener"><span class="certificate-document-image"><img src="${record.image}" alt="${esc(x.types[record.type])}" loading="lazy"></span><span class="certificate-document-copy"><small>${esc(x.document)} · ${number(index+1)}</small><strong>${esc(x.types[record.type])}</strong><em>${esc(x.open)} ↗</em></span></a></article>`).join('');
+  return `<section class="quality-library section-shell"><header><span class="kicker">${esc(t('quality'))}</span><h2>${esc(x.libraryTitle)}</h2><p>${esc(x.libraryIntro)}</p></header><div class="certificate-document-grid">${cards}</div><aside><strong>${esc(l.source)}</strong><p>${esc(x.certificateNote)}</p></aside></section>`;
 }
 
 function quoteForm(page) {
@@ -53,7 +66,7 @@ function render() {
   if(!page){ location.assign(route('/')); return; }
   metadata(page.title+' | LU Packaging',page.description);
   const l=currentUi();
-  document.querySelector('#content-app').innerHTML=`${navMarkup()}<main><section class="content-hero"><div><span class="kicker">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.description}</p><a class="text-link" href="${route('/request-quote/')}">${t('quote')} <span class="direction-arrow">→</span></a></div><figure class="content-media media-${page.layout}"><img src="${page.image}" alt="${esc(page.imageAlt)}" fetchpriority="high"><figcaption>${l.source}</figcaption></figure></section><section class="content-points section-shell">${page.points.map((point,index)=>`<article><span>${String(number(index+1)).padStart(2,'0')}</span><p>${point}</p></article>`).join('')}</section>${page.layout==='company'?companyDetails():''}${page.layout==='products'?productGrid():''}${page.layout==='quote'?quoteForm(page):''}<aside class="content-source-note section-shell"><strong>${l.source}</strong><p>${l.notice}</p><a href="${supplierUrl}" target="_blank" rel="noopener">${t('store')} ↗</a></aside>${page.layout!=='quote'?`<section class="content-cta section-shell"><span>${l.brief}</span><h2>${t('contactTitle')}</h2><a class="button inverse" href="${route('/request-quote/')}">${t('quote')} ↗</a></section>`:''}</main>${footer()}`;
+  document.querySelector('#content-app').innerHTML=`${navMarkup()}<main><section class="content-hero"><div><span class="kicker">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.description}</p><a class="text-link" href="${route('/request-quote/')}">${t('quote')} <span class="direction-arrow">→</span></a></div><figure class="content-media media-${page.layout}"><img src="${page.image}" alt="${esc(page.imageAlt)}" fetchpriority="high"><figcaption>${l.source}</figcaption></figure></section><section class="content-points section-shell">${page.points.map((point,index)=>`<article><span>${String(number(index+1)).padStart(2,'0')}</span><p>${point}</p></article>`).join('')}</section>${page.layout==='company'?companyDetails():''}${page.layout==='quality'?qualityDetails():''}${page.layout==='products'?productGrid():''}${page.layout==='quote'?quoteForm(page):''}<aside class="content-source-note section-shell"><strong>${l.source}</strong><p>${l.notice}</p><a href="${supplierUrl}" target="_blank" rel="noopener">${t('store')} ↗</a></aside>${page.layout!=='quote'?`<section class="content-cta section-shell"><span>${l.brief}</span><h2>${t('contactTitle')}</h2><a class="button inverse" href="${route('/request-quote/')}">${t('quote')} ↗</a></section>`:''}</main>${footer()}`;
   initProductMenu();
   const menu=document.querySelector('.menu');
   const closeMenu=()=>{document.querySelector('#nav').classList.remove('open');document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};

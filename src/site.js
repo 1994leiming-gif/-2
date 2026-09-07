@@ -59,15 +59,23 @@ export function wordmark(href = '/') {
 }
 export function productMenu() {
   const menuCategories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack'];
+  const menuImages = {
+    paperbag:'/images/menu/paper-bags.png',
+    nonwoven:'/images/menu/non-woven-bags.png',
+    paperbox:'/images/menu/paper-gift-boxes.png',
+    mailerbox:'/images/menu/mailer-boxes.png',
+    flexiblepack:'/images/menu/flexible-pouches.png',
+  };
   const categoryRows = menuCategories.map((category, index) => {
     const count = allProducts.filter(item => item.category === category).length;
-    return '<div class="product-menu-category"><span class="product-menu-category-name"><b>' + number(index + 1) + '.</b> ' + esc(t(category)) + '</span>' +
-      '<small class="product-menu-count">' + number(count) + '</small>' +
+    return '<article class="product-menu-category"><img class="product-menu-thumb" src="' + menuImages[category] + '" alt="" aria-hidden="true">' +
+      '<div class="product-menu-copy"><span class="product-menu-category-name"><b>' + number(index + 1) + '.</b> ' + esc(t(category)) + '</span><small>' + esc(t(category + 'Desc')) + '</small></div>' +
+      '<small class="product-menu-count" aria-label="' + esc(number(count) + ' ' + t('productCount')) + '"><strong>' + number(count) + '</strong><span>' + esc(t('productCount')) + '</span></small>' +
       '<a class="product-menu-more" href="' + categoryLink(category) + '">' + esc(t('moreProducts')) + ' <span class="direction-arrow">→</span></a>' +
-      '<a class="product-menu-customize" href="' + route('/request-quote/') + '?type=' + encodeURIComponent(category) + '">' + esc(t('customize')) + ' <span class="direction-arrow">→</span></a></div>';
+      '<a class="product-menu-customize" href="' + route('/request-quote/') + '?type=' + encodeURIComponent(category) + '">' + esc(t('customize')) + ' <span class="direction-arrow">→</span></a></article>';
   }).join('');
   return '<details class="product-nav-dropdown"><summary aria-label="' + esc(t('allProducts')) + '"><span>' + esc(t('allProducts')) + '</span><span class="product-menu-chevron" aria-hidden="true">⌄</span></summary>' +
-    '<div class="product-menu-panel"><div class="product-menu-categories">' + categoryRows + '</div></div></details>';
+    '<div class="product-menu-panel"><div class="product-menu-categories">' + categoryRows + '</div><aside class="product-menu-promo"><span>' + esc(t('customService')) + '</span><h2>' + esc(t('customService')) + '</h2><p>' + esc(t('heroIntro')) + '</p><img src="/images/menu/custom-packaging-collection.png" alt="" aria-hidden="true"><a href="' + categoryLink('all') + '">' + esc(t('explore')) + ' <span class="direction-arrow">→</span></a></aside></div></details>';
 }
 export function initProductMenu(root = document) {
   const dropdown = root.querySelector('.product-nav-dropdown');

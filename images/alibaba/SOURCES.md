@@ -11,4 +11,23 @@ Downloaded on 2026-09-07 from the public storefront at <https://luzhouspecialty.
 | `certificates.avif` | `https://sc04.alicdn.com/kf/H644143447a6f427a8543905dcf88ca18H/286173918/H644143447a6f427a8543905dcf88ca18H.png` |
 | `customization-process.avif` | `https://sc04.alicdn.com/kf/He6eeea87ffef472c97d42c6a237407f1U/286173918/He6eeea87ffef472c97d42c6a237407f1U.jpg` |
 
+## Company profile originals
+
+The structured Company page uses the following individual images loaded by the public Alibaba company profile. Local copies live in `images/company/`.
+
+| Local file | Original URL |
+| --- | --- |
+| `overview.jpg` | `https://sc04.alicdn.com/kf/H20f59a2157844c41a00d1765d1335985w.jpg` |
+| `factory-tour.jpg` | `https://s.alicdn.com/@lyj/pano_src/16317192ff244ce8928a252f7f5c4a82/cover.jpg` |
+| `raw-materials.jpg` | `https://sc02.alicdn.com/kf/H4db31550f96b43e3a1a62db5a214a3f46.jpg` |
+| `quality-test.jpg` | `https://sc02.alicdn.com/kf/H4c759da8df1e4f0e9c3cab23d24b4d70v.jpg` |
+| `product-design.jpg` | `https://sc02.alicdn.com/kf/Hf94ee605b70c4be1a6d34c81400a1545f.jpg` |
+| `printing.jpg` | `https://sc02.alicdn.com/kf/H1b99e7130c5a4f798269749bd5aec27eL.jpg` |
+| `hot-stamping.jpg` | `https://sc02.alicdn.com/kf/Hfdab1117f3a54efdad4bfc614f51e9d00.jpg` |
+| `bag-production.jpg` | `https://sc02.alicdn.com/kf/Hbe8179161e8243c0bab08789ce592c870.jpg` |
+
+## Certificate panels
+
+Alibaba exposes the supplier's certificates as the single 3683 × 550 source asset `certificates.avif`; no separate full-size certificate URLs were present in the loaded page. Files in `images/certificates/document-01.png` through `document-13.png` are lossless panel crops from that original source—not screenshots. The Quality page labels them as supplier-displayed documents and asks buyers to reconfirm holder, scope, issuer, and validity.
+
 The Alibaba CDN responded with AVIF for five image requests despite the source URL suffix. Those files use the correct `.avif` extension locally. Capability and certificate imagery is supplier-presented material; the website copy requires product-specific reconfirmation rather than treating it as an independent certification.
