@@ -1,23 +1,57 @@
 # Luzhou Packaging Website
 
-Independent deployment package for the Luzhou Packaging marketing website.
+泸州包装网站，包含中文、英文、阿拉伯语界面，以及 278 款包装产品目录。
 
-## Local development
+## 本地运行
 
-```bash
-npm install
-npm run dev
+使用 Node.js 18 或更高版本，在解压目录运行：
+
+```sh
+npm start
 ```
 
-Open `http://localhost:3000`.
+浏览器访问 `http://127.0.0.1:4173/`。项目没有第三方运行依赖，不需要安装依赖或构建。
 
-## Production build
+- 中文：`/?lang=zh`
+- English：`/?lang=en`
+- العربية：`/?lang=ar`
 
-```bash
-npm run build
-npm run start
+`PORT` 可修改端口；`HOST` 默认 `127.0.0.1`，仅供本机访问。
+
+## 目录
+
+- `index.html`：首页。
+- `category.html`、`product.html`：分类与产品详情。
+- `src/`：页面脚本、样式、三语词典和产品数据。
+- `catalog/`、`company/`、`images/`、`fonts/`、`products/`：本地资源。
+- `qa/产品数据核对报告.md`：数据来源、核对结果和待确认项。
+- `qa/supplier-audit.json`：供应商公开目录核对快照。
+- `qa/supplier-images.json`：278 张主图的哈希比对记录。
+- `qa/audit-results.json`：网站自动检查记录。
+- `scripts/package-release.ps1`：生成发布 ZIP。
+
+## 产品数据的准确性边界
+
+2026-09-05 核对了供应商公开目录 18 页、278 个产品编号。编号、原标题、主图、起订量、币种字段和目录价格区间已同步；此结果不等于已核实全部实体产品规格。
+
+4 款商品的源站币种不明确；24 款软包装使用千米作为计量单位。具体尺寸、克重、配比、承重、装箱数、交期、证书及数量阶梯报价仍需供应商确认。详情页保留来源链接和相应提示。详细情况见核对报告。
+
+网站询价按钮用于复制需求并打开供应商入口，不会自动发送邮件、消息或提交订单。
+
+站内产品、分类、工厂图片和导航均使用站内页面或页面锚点；顶部店铺直跳及产品详情中的来源直跳已移除。只有明确的“咨询供应商”入口会打开阿里巴巴供应商页面。
+
+## 打包
+
+在 PowerShell 中运行：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/package-release.ps1
 ```
 
-## Domain deployment
+ZIP 输出至 `dist/`，包含可运行网站、资源和已整理的核对报告；不包含 Git 历史、原始网页抓取、临时截图或本机专用测试环境。
 
-Import this repository into Vercel. Use the default Next.js preset, then add the custom domain in **Project Settings → Domains**. No environment variables are required.
+## 部署说明
+
+可以通过 `node server.mjs` 或静态文件服务器在域名根目录部署。页面使用以 `/` 开头的资源和路由地址，因此不能未经修改直接部署到 GitHub Pages 的 `/仓库名/` 子路径。上传仓库本身不等同于开通公网网站。
+
+图片、字体、商标及供应商资料保留其原有权利；本项目没有为第三方素材另行授予开源许可。公开发布前请确认相关使用权限。
