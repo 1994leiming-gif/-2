@@ -3,6 +3,9 @@ import { t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18
 import { categoryPath, productPath, normalizeLocalPath, entityFromLocation, canonicalUrl, languageCodes, localeDetails } from './seo-routes.js';
 
 export const supplierUrl = 'https://luzhouspecialty.m.en.alibaba.com/';
+export const supplierProfileUrl = 'https://luzhouspecialty.m.en.alibaba.com/company_profile.html';
+export const supplierVerificationUrl = 'https://luzhouspecialty.en.alibaba.com/company_profile/trustpass_profile.html?certification_type=intl_assessment';
+export const supplierReportUrl = 'https://verified.alibaba.com/supplier/report?aliId=2500001462458&wx_navbar_transparent=true';
 export const categories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack','accessory','plasticbag'];
 export const paperIds = ['1601899947431','1601929692010','1601929766011','1601925253800','1601927631424','1601925527548'];
 export const imagePath = item => item.localImage || item.image;
@@ -111,7 +114,26 @@ export function initProductMenu(root = document) {
 export function detailHeader(back = '/#papers', key = 'backCatalog') {
   return '<header class="detail-header">' + wordmark(route('/')) + '<a class="detail-back" href="' + esc(route(back)) + '" aria-label="' + t(key) + '"><span class="direction-arrow">←</span> ' + t(key) + '</a>' + languageSwitch() + '</header>';
 }
-export const footer = () => '<footer class="detail-footer">' + t('rights') + '</footer>';
+export function supplierService() {
+  return '<aside class="supplier-service"><a href="' + supplierUrl + '" target="_blank" rel="noopener" aria-label="' + esc(t('supplierSupport')) + '">' +
+    '<span class="supplier-service-dot" aria-hidden="true"></span><strong>' + esc(t('supplierSupport')) + '</strong><span class="supplier-service-arrow" aria-hidden="true">↗</span></a></aside>';
+}
+export function footer() {
+  const productLinks = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack'].map(category =>
+    '<a href="' + categoryLink(category) + '">' + esc(t(category)) + '</a>'
+  ).join('');
+  return '<footer id="site-footer" class="site-footer"><div class="site-footer-main"><div class="site-footer-intro">' + wordmark(route('/')) +
+    '<p>' + esc(t('footerDesc')) + '</p><small>' + esc(t('establishedLocation')) + '</small></div>' +
+    '<nav class="site-footer-nav" aria-label="' + esc(t('nav')) + '"><section><h2>' + esc(t('catalog')) + '</h2>' + productLinks +
+    '</section><section><h2>' + esc(t('company')) + '</h2><a href="' + route('/company/') + '">' + esc(t('company')) + '</a>' +
+    '<a href="' + route('/capabilities/custom-packaging/') + '">' + esc(t('capabilities')) + '</a><a href="' + route('/capabilities/production/') + '">' + esc(t('process')) + '</a>' +
+    '<a href="' + route('/quality/') + '">' + esc(t('quality')) + '</a><a href="' + route('/request-quote/') + '">' + esc(t('contact')) + '</a></section>' +
+    '<section><h2>' + esc(t('buyerResources')) + '</h2><a href="' + supplierVerificationUrl + '" target="_blank" rel="noopener">' + esc(t('verifiedProfile')) + ' ↗</a>' +
+    '<a href="' + supplierReportUrl + '" target="_blank" rel="noopener">' + esc(t('supplierAssessment')) + ' ↗</a><a href="' + supplierProfileUrl + '" target="_blank" rel="noopener">' + esc(t('store')) + ' ↗</a></section></nav></div>' +
+    '<div class="site-footer-meta"><address><strong>' + esc(t('registeredAddress')) + '</strong><span>' + esc(t('footerAddress')) + '</span><small>' + esc(t('nearestPort')) + '</small></address>' +
+    '<a class="site-footer-cta" href="' + route('/request-quote/') + '"><span>' + esc(t('quote')) + '</span><b aria-hidden="true">→</b></a></div>' +
+    '<div class="site-footer-bottom"><small>' + esc(t('rights')) + '</small><a href="' + supplierVerificationUrl + '" target="_blank" rel="noopener">' + esc(t('sourceInfo')) + ' ↗</a></div></footer>' + supplierService();
+}
 export function metadata(title, description = t('metaHome')) {
   document.title = title;
   document.querySelector('meta[name="description"]')?.setAttribute('content', description);

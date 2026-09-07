@@ -1,6 +1,6 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
-import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route } from './site.js';
+import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route, footer } from './site.js';
 
 const state = { email:'', type:'paperbag', color:'', status:'', error:'', language:'', slide:null };
 const slides = ['company-12.jpg','company-38.jpg','company-39.jpg','company-32.jpg','company-37.jpg'];
@@ -73,8 +73,7 @@ function render() {
     <div class="feature-copy"><span class="kicker light">${t('whyEyebrow')}</span><h2>${t('whyTitle')}</h2><p>${t('whyDesc')}</p><ul>${[1,2,3].map(i=>`<li><span>${number(i)}</span><div><b>${t('why'+i)}</b><small>${t('why'+i+'Desc')}</small></div></li>`).join('')}</ul><a class="button inverse" href="#contact">${t('brief')} ↗</a></div>
   </section>
 </main>
-<footer>${wordmark('#top')}<p>${t('footerDesc')}</p><div><a href="${route('/products/featured/')}">${t('catalog')}</a><a href="${route('/capabilities/custom-packaging/')}">${t('capabilities')}</a><a href="${route('/quality/')}">${t('quality')}</a><a href="${route('/company/')}">${t('company')}</a><a href="${route('/request-quote/')}">${t('contact')}</a></div><small>${t('rights')}</small></footer>
-<aside class="supplier-service"><span>${t('onlineSupport')}</span><strong>${t('supplierSupport')}</strong><small>${t('supportDesc')}</small><a href="${supplierUrl}" target="_blank" rel="noopener">${t('supportLink')} ↗</a></aside>
+${footer()}
 ${modalMarkup()}`;
   const menu = document.querySelector('.menu');
   initProductMenu();

@@ -31,3 +31,13 @@ The structured Company page uses the following individual images loaded by the p
 Alibaba exposes the supplier's certificates as the single 3683 × 550 source asset `certificates.avif`; no separate full-size certificate URLs were present in the loaded page. Files in `images/certificates/document-01.png` through `document-13.png` are lossless panel crops from that original source—not screenshots. The Quality page labels them as supplier-displayed documents and asks buyers to reconfirm holder, scope, issuer, and validity.
 
 The Alibaba CDN responded with AVIF for five image requests despite the source URL suffix. Those files use the correct `.avif` extension locally. Capability and certificate imagery is supplier-presented material; the website copy requires product-specific reconfirmation rather than treating it as an independent certification.
+
+## Footer company data
+
+The Footer uses stable, buyer-relevant supplier facts rather than copying Alibaba's marketplace-wide link directory. Company identity, establishment year, registered address, and nearest listed port were checked against these public supplier pages on 2026-09-08:
+
+- Supplier storefront: <https://luzhouspecialty.m.en.alibaba.com/>
+- Verified supplier profile: <https://luzhouspecialty.en.alibaba.com/company_profile/trustpass_profile.html?certification_type=intl_assessment>
+- Supplier assessment report: <https://verified.alibaba.com/supplier/report?aliId=2500001462458&wx_navbar_transparent=true>
+
+Time-sensitive metrics such as response time and on-time dispatch rate are intentionally excluded from the Footer. Alibaba's tokenized contact URL is also not embedded; the compact contact control links to the stable supplier storefront.
