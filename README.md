@@ -24,6 +24,12 @@ SITE_ROOT=dist npm start
 - العربية：`/ar/`
 - 产品示例：`/en/products/1601925527548/`
 - 分类示例：`/fr/categories/paperbag/`
+- 公司介绍：`/en/company/`
+- 包装定制：`/de/capabilities/custom-packaging/`
+- 生产流程：`/es/capabilities/production/`
+- 质量保障：`/fr/quality/`
+- 精选产品：`/id/products/featured/`
+- 获取报价：`/ar/request-quote/`
 
 运行全量 SEO 结构校验：
 
@@ -36,11 +42,13 @@ npm run verify:seo
 ## 目录
 
 - `index.html`：首页。
-- `category.html`、`product.html`：分类与产品详情。
+- `category.html`、`product.html`、`content.html`：分类、产品详情和内容页入口。
 - `src/`：页面脚本、样式、十语词典和产品数据。
-- `scripts/build-seo.mjs`：生成 2,870 个本地化 canonical 页面、sitemap 和 robots.txt。
+- `scripts/build-seo.mjs`：生成 2,930 个本地化 canonical 页面、sitemap 和 robots.txt。
 - `scripts/verify-seo.mjs`：校验页面数量、标题、canonical、hreflang、JSON-LD 和 sitemap。
 - `docs/SEO-PLAN.md`：多语言 SEO 架构、实施阶段与验收标准。
+- `docs/ALIBABA-ALIGNMENT-PAGE-GAP.md`：阿里店铺信息审计、页面差距与实施记录。
+- `images/alibaba/SOURCES.md`：从阿里公开店铺下载的原始高清素材及来源 URL。
 - `catalog/`、`company/`、`images/`、`fonts/`、`products/`：本地资源。
 - `qa/产品数据核对报告.md`：数据来源、核对结果和待确认项。
 - `qa/supplier-audit.json`：供应商公开目录核对快照。

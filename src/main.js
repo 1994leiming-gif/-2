@@ -1,6 +1,6 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
-import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError } from './site.js';
+import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError, route } from './site.js';
 
 const state = { email:'', type:'paperbag', color:'', status:'', error:'', language:'', slide:null };
 const slides = ['company-12.jpg','company-38.jpg','company-39.jpg','company-32.jpg','company-37.jpg'];
@@ -27,8 +27,8 @@ function render() {
   document.querySelector('#app').innerHTML = `
 <header class="topbar source-navigation">
   ${wordmark('#top')}
-  <nav id="nav" aria-label="${t('nav')}">${[['papers','catalog'],['company','company'],['why','capabilities'],['process','process']].map(([id,key])=>`<a href="#${id}">${t(key)}</a>`).join('')}</nav>
-  <div class="nav-actions">${languageSwitch()}<a class="button button-sm" href="#contact">${t('quote')} ↗</a><button class="menu" type="button" aria-controls="nav" aria-label="${t('menuOpen')}" aria-expanded="false">☰</button></div>
+  <nav id="nav" aria-label="${t('nav')}">${[[route('/products/featured/'),'allProducts'],[route('/capabilities/custom-packaging/'),'capabilities'],[route('/capabilities/production/'),'process'],[route('/quality/'),'quality'],[route('/company/'),'company']].map(([href,key])=>`<a href="${href}">${t(key)}</a>`).join('')}</nav>
+  <div class="nav-actions">${languageSwitch()}<a class="button button-sm" href="${route('/request-quote/')}">${t('quote')} ↗</a><button class="menu" type="button" aria-controls="nav" aria-label="${t('menuOpen')}" aria-expanded="false">☰</button></div>
 </header>
 <main id="top">
   <section class="hero source-hero">
@@ -72,7 +72,7 @@ function render() {
     <div class="feature-copy"><span class="kicker light">${t('whyEyebrow')}</span><h2>${t('whyTitle')}</h2><p>${t('whyDesc')}</p><ul>${[1,2,3].map(i=>`<li><span>${number(i)}</span><div><b>${t('why'+i)}</b><small>${t('why'+i+'Desc')}</small></div></li>`).join('')}</ul><a class="button inverse" href="#contact">${t('brief')} ↗</a></div>
   </section>
 </main>
-<footer>${wordmark('#top')}<p>${t('footerDesc')}</p><div><a href="#papers">${t('catalog')}</a><a href="#process">${t('process')}</a><a href="#contact">${t('contact')}</a></div><small>${t('rights')}</small></footer>
+<footer>${wordmark('#top')}<p>${t('footerDesc')}</p><div><a href="${route('/products/featured/')}">${t('catalog')}</a><a href="${route('/capabilities/custom-packaging/')}">${t('capabilities')}</a><a href="${route('/quality/')}">${t('quality')}</a><a href="${route('/company/')}">${t('company')}</a><a href="${route('/request-quote/')}">${t('contact')}</a></div><small>${t('rights')}</small></footer>
 <aside class="supplier-service"><span>${t('onlineSupport')}</span><strong>${t('supplierSupport')}</strong><small>${t('supportDesc')}</small><a href="${supplierUrl}" target="_blank" rel="noopener">${t('supportLink')} ↗</a></aside>
 ${modalMarkup()}`;
   const menu = document.querySelector('.menu');

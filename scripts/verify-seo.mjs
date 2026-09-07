@@ -2,12 +2,14 @@ import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import allProducts from '../src/data/all-products.js';
-import { categoryPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
+import { contentPageSlugs } from '../src/content-pages.js';
+import { categoryPath, contentPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 const categories = ['all','paperbag','nonwoven','paperbox','mailerbox','flexiblepack','accessory','plasticbag'];
 const failures = [];
 let checked = 0;
+const expectedPerLanguage = 1 + categories.length + allProducts.length + contentPageSlugs.length;
 
 const outputPath = pathname => join(root, pathname === '/' ? 'index.html' : pathname.replace(/^\/+|\/+$/g, '') + '/index.html');
 const capture = (html, pattern) => html.match(pattern)?.[1];
@@ -42,6 +44,7 @@ for (const language of languageCodes) {
     homePath(language),
     ...categories.map(category => categoryPath(category, language)),
     ...allProducts.map(item => productPath(item.id, language)),
+    ...contentPageSlugs.map(slug => contentPath(slug, language)),
   ];
   for (const path of paths) {
     let html;
@@ -53,7 +56,7 @@ for (const language of languageCodes) {
   }
   const sitemap = await readFile(join(root, 'sitemaps', language + '.xml'), 'utf8');
   const urlCount = (sitemap.match(/<url>/g) || []).length;
-  if (urlCount !== 287) failures.push(language + ' sitemap: URL count=' + urlCount);
+  if (urlCount !== expectedPerLanguage) failures.push(language + ' sitemap: URL count=' + urlCount);
   for (const path of paths) if (!sitemap.includes('<loc>' + canonicalFor(path) + '</loc>')) failures.push(language + ' sitemap missing ' + path);
 }
 
@@ -61,14 +64,14 @@ const index = await readFile(join(root, 'sitemap.xml'), 'utf8');
 if ((index.match(/<sitemap>/g) || []).length !== 10) failures.push('sitemap index must contain 10 sitemaps');
 const robots = await readFile(join(root, 'robots.txt'), 'utf8');
 if (!robots.includes('Sitemap: ' + siteUrl + '/sitemap.xml')) failures.push('robots.txt sitemap missing');
-for (const asset of ['images/lu-packaging-horizontal.png','images/hero-packaging-source.webp','src/main.js','404.html']) {
+for (const asset of ['images/lu-packaging-horizontal.png','images/hero-packaging-source.webp','images/alibaba/company-overview.avif','images/alibaba/customization-process.avif','src/main.js','src/content.js','404.html']) {
   try { await stat(join(root, asset)); } catch { failures.push('missing output asset: ' + asset); }
 }
 
-if (checked !== 2870) failures.push('HTML page count checked=' + checked);
+if (checked !== expectedPerLanguage * languageCodes.length) failures.push('HTML page count checked=' + checked);
 if (failures.length) {
   console.error('SEO verification failed:\n' + failures.slice(0, 100).join('\n'));
   if (failures.length > 100) console.error('…and ' + (failures.length - 100) + ' more');
   process.exit(1);
 }
-console.log(`SEO verification passed: ${checked} HTML pages, 10 × 287 sitemap URLs, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
+console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);

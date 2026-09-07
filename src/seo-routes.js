@@ -26,12 +26,15 @@ export function withoutLanguage(pathname) {
 export const homePath = language => prefix(language) + '/';
 export const categoryPath = (category, language) => prefix(language) + '/categories/' + encodeURIComponent(category || 'all') + '/';
 export const productPath = (id, language) => prefix(language) + '/products/' + encodeURIComponent(id) + '/';
+export const contentPath = (slug, language) => prefix(language) + '/' + String(slug || '').replace(/^\/+|\/+$/g, '') + '/';
 
 export function entityFromLocation(currentLocation = location) {
   const pathname = withoutLanguage(currentLocation.pathname);
   const params = currentLocation.searchParams || new URLSearchParams(currentLocation.search);
   const categoryMatch = pathname.match(/^\/categories\/([^/]+)\/?$/);
   const productMatch = pathname.match(/^\/products\/([^/]+)\/?$/);
+  const contentMatch = pathname.match(/^\/(company|quality|request-quote|products\/featured|capabilities\/(?:custom-packaging|production))\/?$/);
+  if (contentMatch) return {type:'content',slug:contentMatch[1]};
   if (productMatch) return {type:'product',id:decodeURIComponent(productMatch[1])};
   if (categoryMatch) return {type:'category',category:decodeURIComponent(categoryMatch[1])};
   if (/\/product\.html$/.test(pathname)) return {type:'product',id:params.get('id') || ''};
@@ -42,6 +45,7 @@ export function entityFromLocation(currentLocation = location) {
 export function entityPath(entity, language) {
   if (entity.type === 'product') return productPath(entity.id, language);
   if (entity.type === 'category') return categoryPath(entity.category, language);
+  if (entity.type === 'content') return contentPath(entity.slug, language);
   return homePath(language);
 }
 

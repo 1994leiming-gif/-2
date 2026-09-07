@@ -2,8 +2,9 @@ import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import allProducts from '../src/data/all-products.js';
+import { contentPageSlugs, getContentPage } from '../src/content-pages.js';
 import { messages } from '../src/locales/index.js';
-import { canonicalUrl, categoryPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
+import { canonicalUrl, categoryPath, contentPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
 
 const projectRoot = fileURLToPath(new URL('../', import.meta.url));
 const outputRoot = join(projectRoot, 'dist');
@@ -68,6 +69,8 @@ const entityPath = (entity, language) => entity.type === 'product'
   ? productPath(entity.id, language)
   : entity.type === 'category'
     ? categoryPath(entity.category, language)
+    : entity.type === 'content'
+      ? contentPath(entity.slug, language)
     : homePath(language);
 
 function languageLinks(entity) {
@@ -182,6 +185,22 @@ function productDocument(language, item) {
   return htmlPage({language,head:pageHead({language,entity,title,description,image:imageUrl(productImage(item)),type:'product',schema}),appId:'product-app',bodyClass:'detail-body',fallback,script:'/src/product.js'});
 }
 
+function contentDocument(language, slug) {
+  const page = getContentPage(slug, language);
+  const entity = {type:'content',slug};
+  const url = canonicalUrl(entity, language);
+  const title = stripHtml(page.title + ' | LU Packaging');
+  const description = stripHtml(page.description);
+  const schemaType = slug === 'company' ? 'AboutPage' : slug === 'products/featured' ? 'CollectionPage' : slug === 'request-quote' ? 'ContactPage' : 'WebPage';
+  const schema = {'@context':'https://schema.org','@graph':[
+    {'@type':schemaType,'@id':url + '#page',url,name:title,description,image:imageUrl(page.image),inLanguage:localeDetails[language].tag,isPartOf:{'@id':canonicalUrl({type:'home'},language) + '#website'}},
+    breadcrumbSchema([{name:translate(language,'home'),url:canonicalUrl({type:'home'},language)},{name:page.title,url}]),
+  ]};
+  const points = page.points.map(point => `<li>${escapeHtml(point)}</li>`).join('');
+  const fallback = `<nav class="seo-breadcrumb"><a href="${homePath(language)}">${escapeHtml(translate(language,'home'))}</a> / <span>${escapeHtml(page.title)}</span></nav><main class="seo-fallback"><article><p>${escapeHtml(page.eyebrow)}</p><h1>${escapeHtml(page.title)}</h1><p>${escapeHtml(description)}</p><img src="${escapeHtml(page.image)}" alt="${escapeHtml(page.imageAlt)}"><ul>${points}</ul><a href="${contentPath('request-quote',language)}">${escapeHtml(translate(language,'quote'))}</a></article></main>`;
+  return htmlPage({language,head:pageHead({language,entity,title,description,image:imageUrl(page.image),schema}),appId:'content-app',bodyClass:'content-body',fallback,script:'/src/content.js'});
+}
+
 async function writePublic(pathname, contents) {
   const relative = pathname === '/' ? 'index.html' : join(pathname.replace(/^\/+|\/+$/g, ''), 'index.html');
   const target = join(outputRoot, relative);
@@ -213,10 +232,12 @@ async function build() {
     await writePublic(homePath(language), homeDocument(language));
     for (const category of ['all', ...categories]) await writePublic(categoryPath(category, language), categoryDocument(language, category));
     for (const item of allProducts) await writePublic(productPath(item.id, language), productDocument(language, item));
+    for (const slug of contentPageSlugs) await writePublic(contentPath(slug, language), contentDocument(language, slug));
   }
 
   await writeFile(join(outputRoot, 'category.html'), legacyDocument('category-app','/src/category.js','category-body'));
   await writeFile(join(outputRoot, 'product.html'), legacyDocument('product-app','/src/product.js','detail-body'));
+  await writeFile(join(outputRoot, 'content.html'), legacyDocument('content-app','/src/content.js','content-body'));
   await writeFile(join(outputRoot, '404.html'), `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="robots" content="noindex,follow"><title>404 | LU Packaging</title><link rel="stylesheet" href="/src/style.css"></head><body><main class="empty-product"><h1>404</h1><p>Page not found</p><a class="button" href="/">LU Packaging</a></main></body></html>\n`);
 
   await mkdir(join(outputRoot, 'sitemaps'), {recursive:true});
@@ -225,6 +246,10 @@ async function build() {
       sitemapEntry({type:'home'}, language),
       ...['all', ...categories].map(category => sitemapEntry({type:'category',category}, language)),
       ...allProducts.map(item => sitemapEntry({type:'product',id:item.id}, language, productImage(item))),
+      ...contentPageSlugs.map(slug => {
+        const page = getContentPage(slug, language);
+        return sitemapEntry({type:'content',slug}, language, page.image);
+      }),
     ];
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${entries.join('\n')}\n</urlset>\n`;
     await writeFile(join(outputRoot, 'sitemaps', language + '.xml'), sitemap);
@@ -232,7 +257,7 @@ async function build() {
   const indexEntries = languageCodes.map(language => `  <sitemap><loc>${siteUrl}/sitemaps/${language}.xml</loc><lastmod>${buildDate}</lastmod></sitemap>`).join('\n');
   await writeFile(join(outputRoot, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexEntries}\n</sitemapindex>\n`);
   await writeFile(join(outputRoot, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  console.log(`Generated ${languageCodes.length * (1 + 8 + allProducts.length)} canonical HTML pages, ${languageCodes.length} language sitemaps, robots.txt and sitemap.xml.`);
+  console.log(`Generated ${languageCodes.length * (1 + 8 + allProducts.length + contentPageSlugs.length)} canonical HTML pages, ${languageCodes.length} language sitemaps, robots.txt and sitemap.xml.`);
 }
 
 await build();
