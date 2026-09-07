@@ -309,6 +309,10 @@ html[dir="rtl"] .cert-close{right:auto;left:25px}
 @media(max-width:700px){.category-pagination{grid-template-columns:1fr 1fr;gap:16px;margin-top:46px;padding-top:24px}.category-pagination-pages{grid-column:1/-1;grid-row:1;flex-wrap:wrap;gap:4px}.category-pagination-arrow{grid-row:2;width:100%}.category-pagination-arrow:last-child{justify-self:stretch}.category-pagination-page{min-width:36px;height:36px}.category-pagination-ellipsis{width:22px;height:36px}}
 @media(max-width:380px){.category-pagination-page{min-width:32px;padding:0 6px}.category-pagination-arrow{padding-inline:10px}}
 
+/* Keep anchored section headings clear of the sticky navigation. */
+#directory,#papers,#company,#capability,#process,#contact{scroll-margin-top:90px}
+@media(max-width:600px){#directory,#papers,#company,#capability,#process,#contact{scroll-margin-top:66px}}
+
 /* Keep authentic catalogue photography within a consistent neutral frame. */
 .category-grid{align-items:stretch}
 .category-product{display:flex;height:100%;flex-direction:column}
