@@ -151,6 +151,8 @@ export default {
   backCatalog: 'Torna alle collezioni',
   backCategory: 'Torna alla categoria',
   allProducts: 'Tutti i prodotti',
+  productSearch: 'Cerca prodotti o ID prodotto',
+  productSearchEmpty: 'Nessun prodotto corrispondente.',
   categoryNav: 'Categorie di prodotti',
   categoryTitle: '{name} | Catalogo prodotti',
   productPageTitle: '{name} | LU Packaging',

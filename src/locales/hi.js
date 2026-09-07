@@ -151,6 +151,8 @@ export default {
   backCatalog: "उत्पाद श्रेणियों पर वापस जाएँ",
   backCategory: "श्रेणी पर वापस जाएँ",
   allProducts: "सभी उत्पाद",
+  productSearch: "उत्पाद या उत्पाद आईडी खोजें",
+  productSearchEmpty: "कोई मिलता-जुलता उत्पाद नहीं मिला।",
   categoryNav: "उत्पाद श्रेणियाँ",
   categoryTitle: "{name} | उत्पाद कैटलॉग",
   productPageTitle: "{name} | LU Packaging",

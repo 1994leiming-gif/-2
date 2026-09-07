@@ -1,6 +1,6 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
-import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError, route } from './site.js';
+import { categories, paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route } from './site.js';
 
 const state = { email:'', type:'paperbag', color:'', status:'', error:'', language:'', slide:null };
 const slides = ['company-12.jpg','company-38.jpg','company-39.jpg','company-32.jpg','company-37.jpg'];
@@ -27,7 +27,7 @@ function render() {
   document.querySelector('#app').innerHTML = `
 <header class="topbar source-navigation">
   ${wordmark('#top')}
-  <nav id="nav" aria-label="${t('nav')}">${[[route('/products/featured/'),'allProducts'],[route('/capabilities/custom-packaging/'),'capabilities'],[route('/capabilities/production/'),'process'],[route('/quality/'),'quality'],[route('/company/'),'company']].map(([href,key])=>`<a href="${href}">${t(key)}</a>`).join('')}</nav>
+  <nav id="nav" aria-label="${t('nav')}">${productMenu()}${[[route('/capabilities/custom-packaging/'),'capabilities'],[route('/capabilities/production/'),'process'],[route('/quality/'),'quality'],[route('/company/'),'company']].map(([href,key])=>`<a href="${href}">${t(key)}</a>`).join('')}</nav>
   <div class="nav-actions">${languageSwitch()}<a class="button button-sm" href="${route('/request-quote/')}">${t('quote')} ↗</a><button class="menu" type="button" aria-controls="nav" aria-label="${t('menuOpen')}" aria-expanded="false">☰</button></div>
 </header>
 <main id="top">
@@ -76,6 +76,7 @@ function render() {
 <aside class="supplier-service"><span>${t('onlineSupport')}</span><strong>${t('supplierSupport')}</strong><small>${t('supportDesc')}</small><a href="${supplierUrl}" target="_blank" rel="noopener">${t('supportLink')} ↗</a></aside>
 ${modalMarkup()}`;
   const menu = document.querySelector('.menu');
+  initProductMenu();
   const closeMenu = () => {document.querySelector('#nav').classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};
   menu.onclick = () => {
     const open=document.querySelector('#nav').classList.toggle('open');

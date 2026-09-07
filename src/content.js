@@ -2,7 +2,7 @@ import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
 import { getContentPage } from './content-pages.js';
 import { entityFromLocation } from './seo-routes.js';
-import { paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, metadata, copyMessage, formStatus, emailError, route, footer } from './site.js';
+import { paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route, footer } from './site.js';
 
 const ui = {
   en:{source:'Original supplier material',notice:'These images were downloaded from the supplier’s public Alibaba storefront at their original loaded resolution. Displayed certificates and capability material must be reconfirmed for the exact product and order.',verified:'Verified company details',registry:'China registration no. 91510504MA67P35K4B · issued 8 Apr 2018 · long-term validity',markets:'International coordination',marketsText:'Nearest port listed: Luzhou Port. Public supplier data shows domestic sales remain the majority; overseas orders require destination-specific freight confirmation.',view:'View collection',brief:'Start a packaging brief',details:'Project details',detailsPlaceholder:'Product use, dimensions, artwork, material, printing, packing and delivery requirements',copy:'Copy brief & contact supplier'},
@@ -25,8 +25,8 @@ const featured = [
 const currentUi = () => ui[getLanguage()] || ui.en;
 
 function navMarkup() {
-  const links = [[route('/products/featured/'),'allProducts'],[route('/capabilities/custom-packaging/'),'capabilities'],[route('/capabilities/production/'),'process'],[route('/quality/'),'quality'],[route('/company/'),'company']];
-  return `<header class="topbar source-navigation content-navigation">${wordmark(route('/'))}<nav id="nav" aria-label="${t('nav')}">${links.map(([href,key])=>`<a href="${href}">${t(key)}</a>`).join('')}</nav><div class="nav-actions">${languageSwitch()}<a class="button button-sm" href="${route('/request-quote/')}">${t('quote')} ↗</a><button class="menu" type="button" aria-controls="nav" aria-label="${t('menuOpen')}" aria-expanded="false">☰</button></div></header>`;
+  const links = [[route('/capabilities/custom-packaging/'),'capabilities'],[route('/capabilities/production/'),'process'],[route('/quality/'),'quality'],[route('/company/'),'company']];
+  return `<header class="topbar source-navigation content-navigation">${wordmark(route('/'))}<nav id="nav" aria-label="${t('nav')}">${productMenu()}${links.map(([href,key])=>`<a href="${href}">${t(key)}</a>`).join('')}</nav><div class="nav-actions">${languageSwitch()}<a class="button button-sm" href="${route('/request-quote/')}">${t('quote')} ↗</a><button class="menu" type="button" aria-controls="nav" aria-label="${t('menuOpen')}" aria-expanded="false">☰</button></div></header>`;
 }
 
 function productGrid() {
@@ -51,6 +51,7 @@ function render() {
   metadata(page.title+' | LU Packaging',page.description);
   const l=currentUi();
   document.querySelector('#content-app').innerHTML=`${navMarkup()}<main><section class="content-hero"><div><span class="kicker">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.description}</p><a class="text-link" href="${route('/request-quote/')}">${t('quote')} <span class="direction-arrow">→</span></a></div><figure class="content-media media-${page.layout}"><img src="${page.image}" alt="${esc(page.imageAlt)}" fetchpriority="high"><figcaption>${l.source}</figcaption></figure></section><section class="content-points section-shell">${page.points.map((point,index)=>`<article><span>${String(number(index+1)).padStart(2,'0')}</span><p>${point}</p></article>`).join('')}</section>${page.layout==='company'?companyDetails():''}${page.layout==='products'?productGrid():''}${page.layout==='quote'?quoteForm(page):''}<aside class="content-source-note section-shell"><strong>${l.source}</strong><p>${l.notice}</p><a href="${supplierUrl}" target="_blank" rel="noopener">${t('store')} ↗</a></aside>${page.layout!=='quote'?`<section class="content-cta section-shell"><span>${l.brief}</span><h2>${t('contactTitle')}</h2><a class="button inverse" href="${route('/request-quote/')}">${t('quote')} ↗</a></section>`:''}</main>${footer()}`;
+  initProductMenu();
   const menu=document.querySelector('.menu');
   menu.onclick=()=>{const open=document.querySelector('#nav').classList.toggle('open');menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',t(open?'menuClose':'menuOpen'));menu.textContent=open?'×':'☰';};
   const form=document.querySelector('#content-quote-form');

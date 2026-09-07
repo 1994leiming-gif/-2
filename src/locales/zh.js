@@ -151,6 +151,8 @@ export default {
   "backCatalog": "返回产品目录",
   "backCategory": "返回该分类",
   "allProducts": "全部产品",
+  "productSearch": "搜索产品或产品编号",
+  "productSearchEmpty": "没有找到匹配的产品。",
   "categoryNav": "产品分类",
   "categoryTitle": "{name}｜产品分类",
   "productPageTitle": "{name}｜泸州包装",

@@ -151,6 +151,8 @@ export default {
   backCatalog: "العودة إلى مجموعات المنتجات",
   backCategory: "العودة إلى الفئة",
   allProducts: "جميع المنتجات",
+  productSearch: "ابحث عن منتج أو رقم المنتج",
+  productSearchEmpty: "لم يتم العثور على منتجات مطابقة.",
   categoryNav: "فئات المنتجات",
   categoryTitle: "{name} | دليل المنتجات",
   productPageTitle: "{name} | LU Packaging",

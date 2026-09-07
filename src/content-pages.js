@@ -99,6 +99,8 @@ const copy = {
   },
 };
 
+export const contentPageTranslations = copy;
+
 export function getContentPage(slug, language) {
   const localized = copy[language]?.[slug] || copy.en[slug];
   if (!localized || !pagePresentation[slug]) return null;

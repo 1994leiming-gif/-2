@@ -2,7 +2,8 @@ import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import allProducts from '../src/data/all-products.js';
-import { contentPageSlugs } from '../src/content-pages.js';
+import { contentPageSlugs, contentPageTranslations } from '../src/content-pages.js';
+import { messages } from '../src/locales/index.js';
 import { categoryPath, contentPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
@@ -11,6 +12,19 @@ const googleAnalyticsId = 'G-KJEG3N7QN4';
 const failures = [];
 let checked = 0;
 const expectedPerLanguage = 1 + categories.length + allProducts.length + contentPageSlugs.length;
+
+const referenceLocaleKeys = Object.keys(messages.en).sort();
+for (const language of languageCodes) {
+  const localeKeys = Object.keys(messages[language] || {}).sort();
+  const missingKeys = referenceLocaleKeys.filter(key => !localeKeys.includes(key));
+  const extraKeys = localeKeys.filter(key => !referenceLocaleKeys.includes(key));
+  if (missingKeys.length) failures.push(language + ' locale missing keys: ' + missingKeys.join(', '));
+  if (extraKeys.length) failures.push(language + ' locale extra keys: ' + extraKeys.join(', '));
+  for (const slug of contentPageSlugs) {
+    const page = contentPageTranslations[language]?.[slug];
+    if (!page || page.length !== 5 || !Array.isArray(page[3]) || page[3].length !== 4) failures.push(language + ' content translation missing/incomplete: ' + slug);
+  }
+}
 
 const outputPath = pathname => join(root, pathname === '/' ? 'index.html' : pathname.replace(/^\/+|\/+$/g, '') + '/index.html');
 const capture = (html, pattern) => html.match(pattern)?.[1];
@@ -78,4 +92,4 @@ if (failures.length) {
   if (failures.length > 100) console.error('…and ' + (failures.length - 100) + ' more');
   process.exit(1);
 }
-console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, one GA4 tag per page, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
+console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, complete locale/content-page coverage, one GA4 tag per page, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
