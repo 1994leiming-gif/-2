@@ -151,8 +151,6 @@ export default {
   "backCatalog": "Back to collections",
   "backCategory": "Back to category",
   "allProducts": "All products",
-  "productSearch": "Search products or product ID",
-  "productSearchEmpty": "No matching products found.",
   "categoryNav": "Product categories",
   "categoryTitle": "{name} | Product Catalog",
   "productPageTitle": "{name} | Luzhou Packaging",

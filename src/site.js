@@ -58,40 +58,19 @@ export function wordmark(href = '/') {
   return '<a class="brand source-wordmark" href="' + esc(href) + '" aria-label="' + t('home') + '"><img src="/images/lu-packaging-horizontal.png" alt="LU Packaging"></a>';
 }
 export function productMenu() {
-  const categoryGroups = categories.map(category => {
-    const products = allProducts.filter(item => item.category === category);
-    return '<section class="product-menu-group" data-product-group>' +
-      '<div class="product-menu-group-head"><a href="' + categoryLink(category) + '">' + esc(t(category)) + '</a><span>' + number(products.length) + '</span></div>' +
-      '<div class="product-menu-links">' + products.map(item =>
-        '<a href="' + productLink(item) + '" data-product-entry data-product-search="' + esc((productTitle(item) + ' ' + item.id).toLocaleLowerCase()) + '">' +
-          '<span>' + esc(productTitle(item)) + '</span><small dir="ltr">#' + esc(item.id) + '</small></a>'
-      ).join('') + '</div></section>';
+  const menuCategories = ['paperbag','nonwoven','paperbox','mailerbox','flexiblepack'];
+  const categoryLinks = menuCategories.map((category, index) => {
+    const count = allProducts.filter(item => item.category === category).length;
+    return '<a class="product-menu-category" href="' + categoryLink(category) + '"><span><b>' + number(index + 1) + '.</b> ' + esc(t(category)) + '</span><small>' + number(count) + '</small></a>';
   }).join('');
   return '<details class="product-nav-dropdown"><summary aria-label="' + esc(t('allProducts')) + '"><span>' + esc(t('allProducts')) + '</span><span class="product-menu-chevron" aria-hidden="true">⌄</span></summary>' +
-    '<div class="product-menu-panel"><div class="product-menu-top"><a class="product-menu-featured" href="' + route('/products/featured/') + '">' + esc(t('allProducts')) + '</a>' +
-      '<a class="product-menu-view-all" href="' + categoryLink('all') + '">' + esc(t('viewAll',{count:number(allProducts.length)})) + ' <span class="direction-arrow">→</span></a></div>' +
-      '<label class="product-menu-search"><span>' + esc(t('productSearch')) + '</span><input type="search" inputmode="search" autocomplete="off" placeholder="' + esc(t('productSearch')) + '" data-product-menu-search></label>' +
-      '<div class="product-menu-groups">' + categoryGroups + '</div><p class="product-menu-empty" data-product-menu-empty hidden>' + esc(t('productSearchEmpty')) + '</p></div></details>';
+    '<div class="product-menu-panel"><div class="product-menu-categories">' + categoryLinks + '</div><div class="product-menu-actions">' +
+      '<a href="' + route('/capabilities/custom-packaging/') + '">' + esc(t('capabilities')) + ' <span class="direction-arrow">→</span></a>' +
+      '<a href="' + categoryLink('all') + '">' + esc(t('viewAll',{count:number(allProducts.length)})) + ' <span class="direction-arrow">→</span></a></div></div></details>';
 }
 export function initProductMenu(root = document) {
   const dropdown = root.querySelector('.product-nav-dropdown');
   if (!dropdown) return;
-  const input = dropdown.querySelector('[data-product-menu-search]');
-  const groups = [...dropdown.querySelectorAll('[data-product-group]')];
-  const entries = [...dropdown.querySelectorAll('[data-product-entry]')];
-  const empty = dropdown.querySelector('[data-product-menu-empty]');
-  const filter = () => {
-    const query = input.value.trim().toLocaleLowerCase();
-    let matches = 0;
-    for (const entry of entries) {
-      const visible = !query || entry.dataset.productSearch.includes(query);
-      entry.hidden = !visible;
-      if (visible) matches++;
-    }
-    for (const group of groups) group.hidden = ![...group.querySelectorAll('[data-product-entry]')].some(entry => !entry.hidden);
-    empty.hidden = matches !== 0;
-  };
-  input.addEventListener('input', filter);
   dropdown.addEventListener('toggle', () => {
     if (!dropdown.open) return;
     root.querySelectorAll('.language-dropdown[open]').forEach(menu => menu.removeAttribute('open'));

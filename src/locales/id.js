@@ -151,8 +151,6 @@ export default {
   backCatalog: "Kembali ke koleksi",
   backCategory: "Kembali ke kategori",
   allProducts: "Semua produk",
-  productSearch: "Cari produk atau ID produk",
-  productSearchEmpty: "Tidak ada produk yang cocok.",
   categoryNav: "Kategori produk",
   categoryTitle: "{name} | Katalog produk",
   productPageTitle: "{name} | Luzhou Packaging",
