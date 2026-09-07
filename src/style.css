@@ -278,7 +278,7 @@ html[dir="rtl"] .cert-close{right:auto;left:25px}
 .content-hero>*,.content-quote>*,.content-evidence>*,.content-points>*{min-width:0}
 .content-hero>div{display:flex;flex-direction:column;justify-content:center;padding:80px clamp(28px,7.5vw,132px)}
 .content-hero .kicker{color:#9b7249;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
-.content-hero h1{max-width:690px;margin:24px 0 30px;font-family:Georgia,"Times New Roman","Songti SC",serif;font-size:clamp(48px,5.8vw,94px);font-weight:400;letter-spacing:-.055em;line-height:.96;overflow-wrap:anywhere}
+.content-hero h1{max-width:690px;margin:24px 0 30px;font-family:Georgia,"Times New Roman","Songti SC",serif;font-size:clamp(48px,4.4vw,72px);font-weight:400;letter-spacing:-.055em;line-height:.96;overflow-wrap:normal;word-break:normal;text-wrap:balance}
 .content-hero p{max-width:620px;margin:0;color:#40584f;font-size:17px;line-height:1.75;overflow-wrap:anywhere}
 .content-hero .text-link{align-self:flex-start;margin-top:34px;padding-bottom:6px;border-bottom:1px solid currentColor;color:var(--ink);font-size:12px;text-decoration:none;text-transform:uppercase}
 .content-hero figure{position:relative;min-height:690px;margin:0;overflow:hidden;background:#d8dde3}
