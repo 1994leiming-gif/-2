@@ -2,7 +2,8 @@ import allProducts from './data/all-products.js';
 import {initLanguage,t,escapeHtml as esc,number} from './i18n.js';
 import {categories,detailHeader,footer,metadata,productTitle,productSummary,imagePath,moq,price,route,productLink,parseColor,checkedDate} from './site.js';
 
-const PAGE_SIZE=24;
+// Keep the supplier catalogue's 16-item page rhythm so the complete range is easy to audit.
+const PAGE_SIZE=16;
 const params=new URLSearchParams(location.search);
 const requested=params.get('type');
 const type=categories.includes(requested)?requested:'all';
