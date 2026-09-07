@@ -36,7 +36,7 @@ function render() {
       <div class="hero-cta"><a class="button" href="#papers">${t('explore')} <span class="direction-arrow">→</span></a><a class="text-link" href="#contact">${t('quote')}</a></div>
       <div class="proof-row" aria-label="${t('metrics')}"><div><strong>${number(allProducts.length)}</strong><span>${t('productCount')}</span></div><div><strong>${number(categories.length)}</strong><span>${t('categoryCount')}</span></div><div><strong>${number(4)}</strong><span>${t('dimensions')}</span></div><div><strong lang="en" dir="ltr">OEM</strong><span>${t('customService')}</span></div></div>
     </div>
-    <div class="paper-stage source-hero-image"><img src="/images/hero-packaging-source.webp" alt="${t('heroImage')}" fetchpriority="high"></div>
+    <div class="paper-stage source-hero-image"><img src="/images/hero-packaging-source.webp" alt="${t('heroImage')}" fetchpriority="high"><img class="hero-brand-seal" src="/images/lu-packaging-stacked.png" alt="LU Packaging logo"></div>
   </section>
   <section class="ticker"><div>${[1,2,3,4,5,1,2].map(i=>t('ticker'+i)+' <b aria-hidden="true">✦</b> ').join('')}</div></section>
   <section id="papers" class="catalog section-pad">

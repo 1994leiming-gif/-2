@@ -45,7 +45,7 @@ export function price(item) {
   return t('pricePer',{price:format(match[1]) + (match[2] ? ' – ' + format(match[2]) : ''),unit:t(unitKeys[match[3]])});
 }
 export function wordmark(href = '/') {
-  return '<a class="brand source-wordmark" href="' + esc(href) + '" aria-label="' + t('home') + '"><span lang="en" dir="ltr">luzhou</span><span lang="en" dir="ltr">packaging</span></a>';
+  return '<a class="brand source-wordmark" href="' + esc(href) + '" aria-label="' + t('home') + '"><img src="/images/lu-packaging-horizontal.png" alt="LU Packaging"></a>';
 }
 export function detailHeader(back = '/#papers', key = 'backCatalog') {
   return '<header class="detail-header">' + wordmark(route('/')) + '<a class="detail-back" href="' + esc(route(back)) + '" aria-label="' + t(key) + '"><span class="direction-arrow">←</span> ' + t(key) + '</a>' + languageSwitch() + '</header>';
