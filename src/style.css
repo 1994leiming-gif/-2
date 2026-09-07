@@ -293,3 +293,26 @@ html[dir="rtl"] .source-hero .source-hero-image .hero-brand-seal{right:auto;left
   .source-hero .source-hero-image .hero-brand-seal{width:92px;right:18px;bottom:18px}
   html[dir="rtl"] .source-hero .source-hero-image .hero-brand-seal{right:auto;left:18px}
 }
+
+/* Compact flag language picker for the global top navigation. */
+.language-switch.language-dropdown{position:relative;margin:0;padding:0;border:0;border-radius:0}
+.language-dropdown summary{display:flex;align-items:center;gap:7px;min-width:78px;height:36px;padding:0 10px;border:1px solid rgba(16,52,44,.22);background:rgba(255,255,255,.38);color:var(--ink);cursor:pointer;list-style:none;font-size:10px;font-weight:700;letter-spacing:.04em}
+.language-dropdown summary::-webkit-details-marker{display:none}
+.language-dropdown summary:hover,.language-dropdown[open] summary{background:#fff;border-color:rgba(16,52,44,.4)}
+.language-flag{font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif;font-size:17px;line-height:1}
+.language-chevron{margin-inline-start:auto;font-size:13px;transition:transform .16s ease}
+.language-dropdown[open] .language-chevron{transform:rotate(180deg)}
+.language-menu{position:absolute;top:calc(100% + 10px);right:0;z-index:80;display:grid;grid-template-columns:repeat(2,minmax(145px,1fr));gap:4px;width:326px;padding:8px;border:1px solid rgba(16,52,44,.14);background:#fffdf8;box-shadow:0 18px 48px rgba(13,44,33,.18)}
+.language-menu button{display:grid;grid-template-columns:23px minmax(0,1fr) auto;align-items:center;gap:8px;width:100%;min-width:0;height:40px;padding:0 10px;border:0;border-radius:0;background:transparent;color:var(--ink);cursor:pointer;text-align:start;font-size:12px;font-weight:500}
+.topbar.source-navigation .language-menu button,.detail-header .language-menu button{height:40px;min-width:0;padding:0 10px;border-radius:0;color:var(--ink)}
+.topbar.source-navigation .language-menu button.active,.detail-header .language-menu button.active{background:var(--green);color:#fff}
+.language-menu button:hover,.language-menu button:focus-visible{background:#eee8dc}
+.language-menu button.active{background:var(--green);color:#fff}
+.language-menu button small{font-size:9px;font-weight:700;opacity:.62}
+html[dir="rtl"] .language-menu{right:auto;left:0}
+@media(max-width:600px){
+  .language-dropdown summary{min-width:63px;height:32px;padding:0 8px}
+  .language-current{display:none}
+  .language-menu{position:fixed;top:66px;right:12px;left:auto;grid-template-columns:1fr;width:min(280px,calc(100vw - 24px));max-height:calc(100vh - 82px);overflow:auto}
+  html[dir="rtl"] .language-menu{right:auto;left:12px}
+}
