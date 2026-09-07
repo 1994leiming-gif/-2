@@ -1,4 +1,5 @@
-import { cp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import allProducts from '../src/data/all-products.js';
@@ -13,6 +14,7 @@ const paperIds = ['1601899947431','1601929692010','1601929766011','1601925253800
 const buildDate = '2026-09-07';
 const supplierUrl = 'https://luzhouspecialty.m.en.alibaba.com/';
 const googleAnalyticsId = 'G-KJEG3N7QN4';
+let assetVersion = 'dev';
 
 const featureRules = [
   ['tagPlaPbat',/PLA\s*\+\s*PBAT/i],['tagBopp',/\bBOPP\b/i],['tagPe',/\bPE\b/i],
@@ -38,6 +40,18 @@ const translate = (language, key, values = {}) => {
 const localeNumber = (language, value) => new Intl.NumberFormat(localeDetails[language].tag).format(value);
 const imageUrl = path => /^https?:/.test(path) ? path : siteUrl + path;
 const productImage = item => item.localImage || item.image;
+const assetPath = path => path.startsWith('/src/') ? '/assets/' + assetVersion + '/' + path.slice('/src/'.length) : path;
+
+async function directoryHash(directory, hash = createHash('sha256')) {
+  const entries = (await readdir(directory, {withFileTypes:true})).sort((a, b) => a.name.localeCompare(b.name));
+  for (const entry of entries) {
+    hash.update(entry.name + '\0');
+    const path = join(directory, entry.name);
+    if (entry.isDirectory()) await directoryHash(path, hash);
+    else hash.update(await readFile(path));
+  }
+  return hash;
+}
 
 function productName(item, language) {
   const curated = paperIds.indexOf(item.id);
@@ -108,7 +122,7 @@ function pageHead({ language, entity, title, description, image, type = 'website
     <meta name="twitter:image" content="${escapeHtml(image)}">
     <link rel="icon" href="/images/lu-packaging-stacked.png" type="image/png">
     <link rel="apple-touch-icon" href="/images/lu-packaging-stacked.png">
-    <link rel="stylesheet" href="/src/style.css">
+    <link rel="stylesheet" href="${assetPath('/src/style.css')}">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}"></script>
     <script>
@@ -129,7 +143,7 @@ function htmlPage({ language, head, appId, bodyClass = '', fallback, script }) {
   </head>
   <body${bodyClass ? ` class="${bodyClass}"` : ''}>
     <div id="${appId}">${fallback}</div>
-    <script type="module" src="${script}"></script>
+    <script type="module" src="${assetPath(script)}"></script>
   </body>
 </html>
 `;
@@ -230,12 +244,15 @@ function sitemapEntry(entity, language, image) {
 }
 
 async function build() {
+  assetVersion = (await directoryHash(join(projectRoot, 'src'))).digest('hex').slice(0, 12);
   await rm(outputRoot, {recursive:true,force:true});
   await mkdir(outputRoot, {recursive:true});
   for (const directory of ['catalog','company','fonts','images','public','src']) {
     await cp(join(projectRoot, directory), join(outputRoot, directory), {recursive:true});
   }
   for (const file of ['favicon.svg']) await cp(join(projectRoot, file), join(outputRoot, file));
+  await cp(join(projectRoot, 'src'), join(outputRoot, 'assets', assetVersion), {recursive:true});
+  await writeFile(join(outputRoot, 'asset-manifest.json'), JSON.stringify({version:assetVersion,base:'/assets/' + assetVersion}, null, 2) + '\n');
 
   for (const language of languageCodes) {
     await writePublic(homePath(language), homeDocument(language));
@@ -247,7 +264,7 @@ async function build() {
   await writeFile(join(outputRoot, 'category.html'), legacyDocument('category-app','/src/category.js','category-body'));
   await writeFile(join(outputRoot, 'product.html'), legacyDocument('product-app','/src/product.js','detail-body'));
   await writeFile(join(outputRoot, 'content.html'), legacyDocument('content-app','/src/content.js','content-body'));
-  await writeFile(join(outputRoot, '404.html'), `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="robots" content="noindex,follow"><title>404 | LU Packaging</title><link rel="stylesheet" href="/src/style.css"></head><body><main class="empty-product"><h1>404</h1><p>Page not found</p><a class="button" href="/">LU Packaging</a></main></body></html>\n`);
+  await writeFile(join(outputRoot, '404.html'), `<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><meta name="robots" content="noindex,follow"><title>404 | LU Packaging</title><link rel="stylesheet" href="${assetPath('/src/style.css')}"></head><body><main class="empty-product"><h1>404</h1><p>Page not found</p><a class="button" href="/">LU Packaging</a></main></body></html>\n`);
 
   await mkdir(join(outputRoot, 'sitemaps'), {recursive:true});
   for (const language of languageCodes) {
@@ -266,7 +283,7 @@ async function build() {
   const indexEntries = languageCodes.map(language => `  <sitemap><loc>${siteUrl}/sitemaps/${language}.xml</loc><lastmod>${buildDate}</lastmod></sitemap>`).join('\n');
   await writeFile(join(outputRoot, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexEntries}\n</sitemapindex>\n`);
   await writeFile(join(outputRoot, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
-  console.log(`Generated ${languageCodes.length * (1 + 8 + allProducts.length + contentPageSlugs.length)} canonical HTML pages, ${languageCodes.length} language sitemaps, robots.txt and sitemap.xml.`);
+  console.log(`Generated ${languageCodes.length * (1 + 8 + allProducts.length + contentPageSlugs.length)} canonical HTML pages, ${languageCodes.length} language sitemaps, robots.txt, sitemap.xml and versioned assets ${assetVersion}.`);
 }
 
 await build();

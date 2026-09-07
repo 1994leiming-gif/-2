@@ -12,6 +12,7 @@ const googleAnalyticsId = 'G-KJEG3N7QN4';
 const failures = [];
 let checked = 0;
 const expectedPerLanguage = 1 + categories.length + allProducts.length + contentPageSlugs.length;
+const assetManifest = JSON.parse(await readFile(join(root, 'asset-manifest.json'), 'utf8'));
 
 const referenceLocaleKeys = Object.keys(messages.en).sort();
 for (const language of languageCodes) {
@@ -46,6 +47,8 @@ function inspectHtml(html, language, path) {
   if (hreflangs.length !== 11) failures.push(path + ': hreflang count=' + hreflangs.length);
   if (!html.includes('<meta name="robots" content="index,follow,max-image-preview:large">')) failures.push(path + ': wrong robots');
   if (!html.includes('<meta property="og:title"') || !html.includes('<meta name="twitter:card"')) failures.push(path + ': social metadata missing');
+  if (!html.includes(`href="${assetManifest.base}/style.css"`)) failures.push(path + ': versioned stylesheet missing');
+  if (!html.includes(`src="${assetManifest.base}/`)) failures.push(path + ': versioned module script missing');
   const analyticsLoader = `https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`;
   if ((html.match(new RegExp(analyticsLoader.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g')) || []).length !== 1) failures.push(path + ': GA4 loader missing or duplicated');
   if (!html.includes(`gtag('config', '${googleAnalyticsId}')`)) failures.push(path + ': GA4 config missing');
@@ -85,6 +88,9 @@ if (!robots.includes('Sitemap: ' + siteUrl + '/sitemap.xml')) failures.push('rob
 for (const asset of ['images/lu-packaging-horizontal.png','images/hero-packaging-source.webp','images/alibaba/company-overview.avif','images/alibaba/customization-process.avif','src/main.js','src/content.js','404.html']) {
   try { await stat(join(root, asset)); } catch { failures.push('missing output asset: ' + asset); }
 }
+for (const asset of ['style.css','main.js','content.js','site.js','i18n.js','data/all-products.js']) {
+  try { await stat(join(root, assetManifest.base.replace(/^\//, ''), asset)); } catch { failures.push('missing versioned asset: ' + asset); }
+}
 
 if (checked !== expectedPerLanguage * languageCodes.length) failures.push('HTML page count checked=' + checked);
 if (failures.length) {
@@ -92,4 +98,4 @@ if (failures.length) {
   if (failures.length > 100) console.error('…and ' + (failures.length - 100) + ' more');
   process.exit(1);
 }
-console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, complete locale/content-page coverage, one GA4 tag per page, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
+console.log(`SEO verification passed: ${checked} HTML pages, 10 × ${expectedPerLanguage} sitemap URLs, complete locale/content-page coverage, versioned frontend assets, one GA4 tag per page, unique localized titles, canonical/hreflang/JSON-LD/social metadata and crawl assets.`);
