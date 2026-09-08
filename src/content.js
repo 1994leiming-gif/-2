@@ -1,6 +1,7 @@
 import allProducts from './data/all-products.js';
 import { initLanguage, t, getLanguage, escapeHtml as esc, number, languageSwitch } from './i18n.js';
 import { getContentPage } from './content-pages.js';
+import { renderContentEnrichment } from './content-enrichment.js';
 import { companyFacts, companyMarkets, companyGallery, certificateRecords, extraCopy } from './content-extras.js';
 import { entityFromLocation } from './seo-routes.js';
 import { paperIds, productTitle, imagePath, productLink, categoryLink, supplierUrl, wordmark, productMenu, initProductMenu, metadata, copyMessage, formStatus, emailError, route, footer } from './site.js';
@@ -67,6 +68,7 @@ function render() {
   metadata(page.title+' | LU Packaging',page.description);
   const l=currentUi();
   document.querySelector('#content-app').innerHTML=`${navMarkup()}<main><section class="content-hero"><div><span class="kicker">${page.eyebrow}</span><h1>${page.title}</h1><p>${page.description}</p><a class="text-link" href="${route('/request-quote/')}">${t('quote')} <span class="direction-arrow">→</span></a></div><figure class="content-media media-${page.layout}"><img src="${page.image}" alt="${esc(page.imageAlt)}" fetchpriority="high"><figcaption>${l.source}</figcaption></figure></section><section class="content-points section-shell">${page.points.map((point,index)=>`<article><span>${String(number(index+1)).padStart(2,'0')}</span><p>${point}</p></article>`).join('')}</section>${page.layout==='company'?companyDetails():''}${page.layout==='quality'?qualityDetails():''}${page.layout==='products'?productGrid():''}${page.layout==='quote'?quoteForm(page):''}<aside class="content-source-note section-shell"><strong>${l.source}</strong><p>${l.notice}</p><a href="${supplierUrl}" target="_blank" rel="noopener">${t('store')} ↗</a></aside>${page.layout!=='quote'?`<section class="content-cta section-shell"><span>${l.brief}</span><h2>${t('contactTitle')}</h2><a class="button inverse" href="${route('/request-quote/')}">${t('quote')} ↗</a></section>`:''}</main>${footer()}`;
+  document.querySelector('.content-points').insertAdjacentHTML('afterend', renderContentEnrichment(page.slug, getLanguage()));
   initProductMenu();
   const menu=document.querySelector('.menu');
   const closeMenu=()=>{document.querySelector('#nav').classList.remove('open');document.body.classList.remove('nav-open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label',t('menuOpen'));menu.textContent='☰';};

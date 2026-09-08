@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import allProducts from '../src/data/all-products.js';
 import { contentPageSlugs, getContentPage } from '../src/content-pages.js';
+import { renderContentEnrichment } from '../src/content-enrichment.js';
 import { messages } from '../src/locales/index.js';
 import { canonicalUrl, categoryPath, contentPath, homePath, languageCodes, localeDetails, productPath, siteUrl } from '../src/seo-routes.js';
 
@@ -123,6 +124,7 @@ function pageHead({ language, entity, title, description, image, type = 'website
     <link rel="icon" href="/images/lu-packaging-stacked.png" type="image/png">
     <link rel="apple-touch-icon" href="/images/lu-packaging-stacked.png">
     <link rel="stylesheet" href="${assetPath('/src/style.css')}">
+    ${entity.type === 'content' ? '<link rel="stylesheet" href="' + assetPath('/src/content-enrichment.css') + '">' : ''}
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}"></script>
     <script>
@@ -221,7 +223,8 @@ function contentDocument(language, slug) {
   ]};
   const points = page.points.map(point => `<li>${escapeHtml(point)}</li>`).join('');
   const fallback = `<nav class="seo-breadcrumb"><a href="${homePath(language)}">${escapeHtml(translate(language,'home'))}</a> / <span>${escapeHtml(page.title)}</span></nav><main class="seo-fallback"><article><p>${escapeHtml(page.eyebrow)}</p><h1>${escapeHtml(page.title)}</h1><p>${escapeHtml(description)}</p><img src="${escapeHtml(page.image)}" alt="${escapeHtml(page.imageAlt)}"><ul>${points}</ul><a href="${contentPath('request-quote',language)}">${escapeHtml(translate(language,'quote'))}</a></article></main>`;
-  return htmlPage({language,head:pageHead({language,entity,title,description,image:imageUrl(page.image),schema}),appId:'content-app',bodyClass:'content-body',fallback,script:'/src/content.js'});
+  const enrichedFallback = fallback.replace('</article></main>', '</article>' + renderContentEnrichment(slug, language) + '</main>');
+  return htmlPage({language,head:pageHead({language,entity,title,description,image:imageUrl(page.image),schema}),appId:'content-app',bodyClass:'content-body',fallback:enrichedFallback,script:'/src/content.js'});
 }
 
 async function writePublic(pathname, contents) {
