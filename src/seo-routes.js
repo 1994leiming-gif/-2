@@ -8,12 +8,12 @@ export const localeDetails = {
   zh:{tag:'zh-CN',og:'zh_CN'},
 };
 
-const prefix = language => language === 'zh' ? '' : '/' + language;
+const prefix = language => '/' + language;
 const normalized = path => path === '/' ? '/' : '/' + path.replace(/^\/+|\/+$/g, '') + '/';
 
 export function languageFromPath(pathname) {
   const first = pathname.split('/').filter(Boolean)[0];
-  return first && first !== 'zh' && languageCodes.includes(first) ? first : null;
+  return first && languageCodes.includes(first) ? first : null;
 }
 
 export function withoutLanguage(pathname) {

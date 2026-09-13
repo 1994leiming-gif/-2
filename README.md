@@ -19,7 +19,8 @@ npm run build
 SITE_ROOT=dist npm start
 ```
 
-- 中文：`/`
+- 默认入口：`/`，英文内容，canonical 指向 `/en/`；不按 IP 或浏览器语言强制切换。
+- 中文：`/zh/`；原无前缀中文深层链接继续可访问，canonical 指向对应 `/zh/` 页面。
 - English：`/en/`
 - العربية：`/ar/`
 - 产品示例：`/en/products/1601925527548/`
@@ -35,6 +36,7 @@ SITE_ROOT=dist npm start
 
 ```sh
 npm run verify:seo
+node scripts/test-language.mjs
 ```
 
 `PORT` 可修改端口；`HOST` 默认 `127.0.0.1`，仅供本机访问。

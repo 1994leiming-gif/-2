@@ -18,7 +18,10 @@ const options = Object.fromEntries(languageOptions.map(option => [option.code, o
 const tags = Object.fromEntries(languageOptions.map(option => [option.code, option.tag]));
 const queryLanguage = new URLSearchParams(location.search).get('lang');
 const pathLanguage = languageFromPath(location.pathname);
-let current = pathLanguage || (languages.includes(queryLanguage) ? queryLanguage : 'zh');
+// Root is the international English entry. Keep legacy unprefixed deep links Chinese.
+// Explicit locale URLs always win; IP/browser guesses must not override shared links.
+const defaultLanguage = /^\/(?:index\.html)?$/.test(location.pathname) ? 'en' : 'zh';
+let current = pathLanguage || (languages.includes(queryLanguage) ? queryLanguage : defaultLanguage);
 export const getLanguage = () => current;
 export const number = value => new Intl.NumberFormat(tags[current]).format(value);
 export const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));

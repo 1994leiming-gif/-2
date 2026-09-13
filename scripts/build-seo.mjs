@@ -90,7 +90,7 @@ const entityPath = (entity, language) => entity.type === 'product'
 
 function languageLinks(entity) {
   return languageCodes.map(language => '<link rel="alternate" hreflang="' + localeDetails[language].tag + '" href="' + canonicalUrl(entity, language) + '">').join('\n    ') +
-    '\n    <link rel="alternate" hreflang="x-default" href="' + canonicalUrl(entity, 'zh') + '">';
+    '\n    <link rel="alternate" hreflang="x-default" href="' + canonicalUrl(entity, 'en') + '">';
 }
 
 function jsonLd(data) {
@@ -240,7 +240,7 @@ function legacyDocument(appId, script, bodyClass = '') {
 
 function sitemapEntry(entity, language, image) {
   const alternates = languageCodes.map(code => `    <xhtml:link rel="alternate" hreflang="${localeDetails[code].tag}" href="${escapeXml(canonicalUrl(entity, code))}"/>`).join('\n');
-  return `  <url>\n    <loc>${escapeXml(canonicalUrl(entity, language))}</loc>\n    <lastmod>${buildDate}</lastmod>\n${alternates}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(canonicalUrl(entity, 'zh'))}"/>${image ? `\n    <image:image><image:loc>${escapeXml(imageUrl(image))}</image:loc></image:image>` : ''}\n  </url>`;
+  return `  <url>\n    <loc>${escapeXml(canonicalUrl(entity, language))}</loc>\n    <lastmod>${buildDate}</lastmod>\n${alternates}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(canonicalUrl(entity, 'en'))}"/>${image ? `\n    <image:image><image:loc>${escapeXml(imageUrl(image))}</image:loc></image:image>` : ''}\n  </url>`;
 }
 
 async function build() {
@@ -260,6 +260,13 @@ async function build() {
     for (const item of allProducts) await writePublic(productPath(item.id, language), productDocument(language, item));
     for (const slug of contentPageSlugs) await writePublic(contentPath(slug, language), contentDocument(language, slug));
   }
+
+  // Root is an English alias with /en/ canonical. Preserve old Chinese deep links
+  // as aliases with /zh/... canonical, so existing external links do not break.
+  await writePublic('/', homeDocument('en'));
+  for (const category of ['all', ...categories]) await writePublic('/categories/' + category + '/', categoryDocument('zh', category));
+  for (const item of allProducts) await writePublic('/products/' + item.id + '/', productDocument('zh', item));
+  for (const slug of contentPageSlugs) await writePublic('/' + slug + '/', contentDocument('zh', slug));
 
   await writeFile(join(outputRoot, 'category.html'), legacyDocument('category-app','/src/category.js','category-body'));
   await writeFile(join(outputRoot, 'product.html'), legacyDocument('product-app','/src/product.js','detail-body'));
