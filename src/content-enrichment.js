@@ -118,7 +118,7 @@ const cards = block => `<section class="content-enrichment section-shell">${head
 export function renderContentEnrichment(slug, language) {
   const c=copy[language];
   if(!c || !['company','capabilities/custom-packaging','capabilities/production'].includes(slug)) return '';
-  const href=path=>(language==='zh'?'':'/'+language)+'/'+path+'/';
+  const href=path=>'/'+language+'/'+path+'/';
   const process=`<section class="content-enrichment enrichment-process section-shell"><header class="enrichment-heading"><span class="kicker">${language==='zh'?'合作流程':'OUR PROCESS'}</span><h2>${escape(slug==='company'?c.companyProcess:c.process)}</h2><p>${escape(slug==='company'?c.companyIntro:c.processIntro)}</p></header><ol class="enrichment-timeline">${c.stages.map(([title,body],i)=>`<li><span class="enrichment-number">${label(i)}</span><div><h3>${escape(title)}</h3><p>${escape(body)}</p></div></li>`).join('')}</ol></section>`;
   const links=`<nav class="enrichment-links section-shell" aria-label="${escape(c.links)}">${[['capabilities/custom-packaging',c.customLink],['capabilities/production',c.productionLink],['company',c.companyLink]].filter(([path])=>path!==slug).map(([path,title])=>`<a href="${href(path)}">${escape(title)} <span aria-hidden="true">↗</span></a>`).join('')}<a href="${href('request-quote')}">${escape(c.quote)} <span aria-hidden="true">↗</span></a></nav>`;
   if(slug==='company') return cards(c.company)+process+links;
